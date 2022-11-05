@@ -3,7 +3,7 @@
 import sys
 import string
 
-from parsing import Structure
+from science.parsing import Structure
 
 inputFile  = sys.argv[1]
 outputFile = sys.argv[2]
