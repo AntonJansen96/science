@@ -1,5 +1,27 @@
 import subprocess
 import os
+import time
+
+
+class Stopwatch:
+    """Stopwatch class. Helpful for profiling.
+    """
+    def __init__(self, description=''):
+        """Initialize Stopwatch object. Count starts upon object initialization.
+
+        Args:
+            description (str, optional): Stopwatch description. Defaults to ''.
+        """
+
+        self.description = description
+        self.starttime = time.time()
+
+    def time(self):
+        stoptime = time.time() - self.starttime
+        if self.description == '':
+            print('{:.3f}'.format(stoptime))
+        else:
+            print('{} took {:.3f} s'.format(self.description, stoptime))
 
 
 def gromacs(command, stdin=[], terminal=True, basepath='/usr/local/gromacs_constantph', logFile='gromacs.log'):
@@ -73,7 +95,7 @@ def inputOptionHandler(message, options):
 
 
 def exists(path):
-    """Returns True if the path does not yet exist. Works for directories as well as files.
+    """Returns True if the path exists. Works for directories as well as files.
 
     Args:
         path (string): path to a directory or file.
