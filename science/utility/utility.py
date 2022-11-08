@@ -1,6 +1,7 @@
-import subprocess
-import os
 import time
+import subprocess
+import MDAnalysis
+import os
 
 
 class Stopwatch:
@@ -64,6 +65,55 @@ def gromacs(command, stdin=[], terminal=True, basepath='/usr/local/gromacs_const
     return process.returncode
 
 
+def createIndexFile(inputFile, outputFile, groups) -> str:
+    """Creates an index (.ndx) file for GROMACS for a list of specified groups.
+    These groups are strings that use the MDAnalysis selection syntax.
+
+    Args:
+        inputFile (string): input structure file (pdb / gro) name.
+        outputFile (_type_): output file (ndx) name.
+        groups (list): list of strings. These strings use the MDAnalysis selection syntax.
+
+    Returns:
+        str: outputFile.
+    """
+
+    u = MDAnalysis.Universe(inputFile)
+
+    with open(outputFile, 'w') as file:
+
+        print('Creating index file \'{}\' containing {} index groups:'.format(outputFile, len(groups)))
+
+        groupidx = 0
+
+        for group in groups:
+
+            lineCount = 0
+
+            # Write header. We replace any white space with underscores.
+            header = group.replace(' ', '_')
+            file.write('[ {} ]\n'.format(header))
+
+            indices = list(u.select_atoms(group).atoms.indices)
+
+            for idx in indices:
+                # It's idx + 1 because we want atom numbers, not indices.
+                file.write('{:<6d}'.format(idx + 1))
+
+                # This is to prevent having too many atom numbers on one line.
+                lineCount += 1
+                if lineCount == 13:
+                    file.write('\n')
+                    lineCount = 0
+
+            file.write('\n\n')
+
+            print('group {} \'{}\' contains {} atoms'.format(groupidx, header, len(indices)))
+            groupidx += 1
+
+    return outputFile
+
+
 def inputOptionHandler(message, options):
     """Handles input options when prompting a user.
 
@@ -92,6 +142,25 @@ def inputOptionHandler(message, options):
             return int(val)
 
         print("{} is not a valid option, please try again:\n".format(val))
+
+
+def resname2triplet(triplet):
+    """Converts a resname triplet (e.g. GLU) to a single letter (e.g. D).
+
+    Args:
+        triplet (string): triplet.
+
+    Returns:
+        char: single letter.
+    """
+
+    dict = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+            'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+            'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+            'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M',
+            'ASPT': 'D', 'GLUT': 'E', 'HSPT': 'H'}
+
+    return dict[triplet]
 
 
 def exists(path):
