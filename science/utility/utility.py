@@ -145,7 +145,7 @@ def inputOptionHandler(message, options):
 
 
 def resname2triplet(triplet):
-    """Converts a resname triplet (e.g. GLU) to a single letter (e.g. D).
+    """Converts a resname triplet (e.g. GLU) to a single letter (e.g. E).
 
     Args:
         triplet (string): triplet.
