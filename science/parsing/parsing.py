@@ -35,20 +35,21 @@ def loadxvg(fname, col=[0, 1], dt=1, b=0):
     return data
 
 
-def loadCol(fname, col=1):
+def loadCol(fname, col=1, header=None):
     """Loads a column in a file into a list. Automatically determines the type
     for the values in the list. Defaults to strings if multiple types detected
     in column.
 
     Args:
         fname (string): file name.
-        col (int): The column number (starts at 1). Defaults to 1.
+        col (int): the column number (starts at 1). Defaults to 1.
+        header (int): row numbers to consider as header. header=None means no header, header=0 means 1 header line, header=1 means 2 header lines etc. Defaults to None.
 
     Returns:
         list: The column loaded into a list.
     """
 
-    df = pandas.read_table(fname, header=None, delim_whitespace=True, na_filter=False)
+    df = pandas.read_table(fname, header=header, delim_whitespace=True, na_filter=False)
 
     return list(df.iloc[:, col - 1])
 
