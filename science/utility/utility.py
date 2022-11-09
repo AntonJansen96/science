@@ -145,7 +145,7 @@ def inputOptionHandler(message, options):
         print("{} is not a valid option, please try again:\n".format(val))
 
 
-def resname2triplet(triplet):
+def triplet2letter(triplet):
     """Converts a resname triplet (e.g. GLU) to a single letter (e.g. E).
 
     Args:
