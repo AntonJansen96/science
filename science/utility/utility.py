@@ -2,6 +2,7 @@ import time
 import subprocess
 import MDAnalysis
 import os
+import scipy.stats as stats
 
 
 class Stopwatch:
@@ -174,3 +175,21 @@ def exists(path):
     """
 
     return bool(os.path.exists(path))
+
+
+def ttestPass(sample1, sample2, alpha=0.05):
+    """Returns True if the means of sample1 and sample2 differ SIGNIFICANTLY.
+    That is, with a confidence interval of 1 - alpha %. Uses Welch's t-test.
+
+    Args:
+        sample1 (list): Some sample.
+        sample2 (list): Sample to compare to.
+        alpha (float, optional): Significance of the test. Defaults to 0.05.
+
+    Returns:
+        bool: Whether or not the two sample means differ signifcantly.
+    """
+
+    pvalue = stats.ttest_ind(sample1, sample2, equal_var=False)[1]
+
+    return bool(pvalue < alpha)
