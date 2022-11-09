@@ -99,7 +99,7 @@ def createIndexFile(inputFile, outputFile, groups) -> str:
 
             for idx in indices:
                 # It's idx + 1 because we want atom numbers, not indices.
-                file.write('{:<6d}'.format(idx + 1))
+                file.write('{:<7d}'.format(idx + 1))
 
                 # This is to prevent having too many atom numbers on one line.
                 lineCount += 1
@@ -147,6 +147,7 @@ def inputOptionHandler(message, options):
 
 def triplet2letter(triplet):
     """Converts a resname triplet (e.g. GLU) to a single letter (e.g. E).
+    Note: also does NA->Na+ and CL->Cl-.
 
     Args:
         triplet (string): triplet.
@@ -159,7 +160,7 @@ def triplet2letter(triplet):
             'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
             'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
             'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M',
-            'ASPT': 'D', 'GLUT': 'E', 'HSPT': 'H'}
+            'ASPT': 'D', 'GLUT': 'E', 'HSPT': 'H', 'NA': 'Na+', 'CL': 'Cl-'}
 
     return dict[triplet]
 
