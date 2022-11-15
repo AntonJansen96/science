@@ -19,6 +19,8 @@ class Stopwatch:
         self.starttime = time.time()
 
     def time(self):
+        """Print elapsed time (in seconds).
+        """
         stoptime = time.time() - self.starttime
         if self.description == '':
             print('{:.3f}'.format(stoptime))
