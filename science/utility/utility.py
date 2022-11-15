@@ -74,7 +74,7 @@ def createIndexFile(inputFile, outputFile, groups) -> str:
 
     Args:
         inputFile (string): input structure file (pdb / gro) name.
-        outputFile (_type_): output file (ndx) name.
+        outputFile (string): output file (ndx) name.
         groups (list): list of strings. These strings use the MDAnalysis selection syntax.
 
     Returns:
