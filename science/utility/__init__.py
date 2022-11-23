@@ -7,3 +7,4 @@ from .utility import inputOptionHandler  # noqa
 from .utility import triplet2letter      # noqa
 from .utility import exists              # noqa
 from .utility import ttestPass           # noqa
+from .utility import makeSuperDict       # noqa
