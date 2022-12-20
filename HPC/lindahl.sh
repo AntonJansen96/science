@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --time=1-23:59:59
 #SBATCH --nodes=1
-#SBATCH -p lindahl1,lindahl2,lindahl3,lindahl4
+#SBATCH -p lindahl3,lindahl4
 #SBATCH --job-name=4HFI_5.5
 #SBATCH --mail-user=anton.jansen@scilifelab.se
 #SBATCH --mail-type=ALL
@@ -29,8 +29,11 @@ source ${PWD}/bin/GMXRC
 # RUN SIMULATION
 
 cd "$simdir"
-gmx mdrun -deffnm MD -c MD.pdb -x MD.xtc -cpi MD.cpt -npme 0 -maxh 47 -bonded gpu
+gmx mdrun -deffnm MD -c MD.pdb -x MD.xtc -cpi MD.cpt -npme 0 -maxh 47 -bonded gpu -nt $SLURM_JOB_CPUS_PER_NODE
 
-# RESUBMIT
+# RESUBMIT IF NOT DONE
 
-sbatch jobscript.sh
+if [ ! -e MD.pdb ]
+then
+    sbatch jobscript.sh
+fi
