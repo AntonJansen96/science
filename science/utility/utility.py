@@ -263,3 +263,36 @@ def makeSuperDict(keyLists):
             array[idx - 1][key] = copy.deepcopy(array[idx])
 
     return array[0]
+
+
+def genRestraints(pdb, fname, atomSelection):
+    """Write a position restraint file for specified atomSelection.
+    Note: funct = 1, fcx = fcy = fcz = 1000 (hardcoded).
+
+    Args:
+        pdb (str): structure file.
+        fname (str): output file (.itp) name.
+        atomSelection (str): MDAnalysis style selection string.
+    """
+
+    u   = MDAnalysis.Universe(pdb)
+    sel = u.select_atoms(atomSelection).atoms.indices
+
+    with open(fname, 'w+') as file:
+        # Write header
+        file.write('; Position restraints for {}\n'.format(pdb))
+        file.write('; Selection is \'{}\'\n\n'.format(atomSelection))
+        file.write('[ position_restraints ]\n')
+        file.write(';  i funct       fcx        fcy        fcz\n')
+
+        # Write position restraints
+        for idx in list(sel):
+            file.write('{}  1  1000  1000  1000\n'.format(idx + 1))
+
+    # User update and reminder
+    print('Generated position restraints file \'{}\''.format(fname))
+    print('Don\'t forget to add the following to (the bottom of) your topology:\n')
+    print('#ifdef POSRES_NAME\n#include \"{}\"'.format(fname))
+    print('#endif\n')
+    print('And the following to your .mdp file:\n')
+    print('define = -DPOSRES_NAME\n')
