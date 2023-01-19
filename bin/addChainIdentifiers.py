@@ -1,9 +1,11 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 import sys
 import string
 
 from science.parsing import Structure
+
+assert len(sys.argv) == 3, 'Specify source file and target file'
 
 inputFile  = sys.argv[1]
 outputFile = sys.argv[2]
