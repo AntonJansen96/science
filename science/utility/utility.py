@@ -168,19 +168,6 @@ def triplet2letter(triplet):
     return dict[triplet]
 
 
-def exists(path):
-    """Returns True if the path exists. Works for directories as well as files.
-
-    Args:
-        path (string): path to a directory or file.
-
-    Returns:
-        bool: does path exist?
-    """
-
-    return bool(os.path.exists(path))
-
-
 def ttestPass(sample1, sample2, alpha=0.05):
     """Returns True if the means of sample1 and sample2 differ SIGNIFICANTLY.
     That is, with a confidence interval of 1 - alpha %. Uses Welch's t-test.
@@ -296,3 +283,21 @@ def genRestraints(pdb, fname, atomSelection):
     print('#endif\n')
     print('And the following to your .mdp file:\n')
     print('define = -DPOSRES_NAME\n')
+
+def backup(name, verbose=True):
+    """Create a GROMACS-style (e.g. '#MD.log.1#') backup of file name.
+
+    Args:
+        name (str): (base) file name to backup.
+        verbose (bool, optional): provide a user update. Defaults to True.
+    """
+    
+    count = 1
+    while os.path.isfile(name):
+        if os.path.isfile(f'#{name}.{count}#'):
+            count += 1
+        else:
+            os.system(f'mv {name} \#{name}.{count}\#')
+            if verbose:
+                print(f'Backed up {name} to #{name}.{count}#')
+            return
