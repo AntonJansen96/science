@@ -17,19 +17,21 @@ with open(sourceFile) as file:
             camera = line
             break
 
+# Process camera line further
+
+for idx in range(0, len(camera)):
+    if camera[idx] == '{':
+        camera = camera[idx:]
+        break
+
 def writeViewBlock(file):
-    file.write('\n# VIEWPOINT BLOCK ##############################################################\n')
-    file.write('set viewplist {}\n')
-    file.write(f'{camera}\n')
-    file.write('lappend viewplist [molinfo top]\n')
-    file.write('foreach v $viewplist {\n')
-    file.write('  molinfo $v set {center_matrix rotate_matrix scale_matrix global_matrix} $viewpoints($v)\n}\n')
-    file.write('unset viewplist\n')
+    file.write('\n# VIEWPOINT\n')
+    file.write(f'molinfo [molinfo top] set {{center_matrix rotate_matrix scale_matrix global_matrix}} {camera}\n')
 
 # Write viewpoint block to target file:
 with open(targetFile, 'a+') as file:
     writeViewBlock(file)
 
 # Rewrite source file to only consist of the view block:
-with open(sourceFile, 'w+') as file:
-    writeViewBlock(file)
+# with open(sourceFile, 'w+') as file:
+#     writeViewBlock(file)
