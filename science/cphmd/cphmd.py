@@ -1,7 +1,7 @@
 import MDAnalysis
 
 
-def protonation(xList, cutoff=0.8) -> float:
+def protonation(xList: list, cutoff: float = 0.8) -> float:
     """Returns the average protonation, i.e. the fraction of frames in which
     the lambda-coordinate is < 1 - cutoff.
 
@@ -32,7 +32,7 @@ def protonation(xList, cutoff=0.8) -> float:
     return fraction
 
 
-def deprotonation(xList, cutoff=0.8) -> float:
+def deprotonation(xList: list, cutoff: float = 0.8) -> float:
     """Returns the average deprotonation, i.e. the fraction of frames in which
     the lambda-coordinate is > cutoff.
 
@@ -63,7 +63,7 @@ def deprotonation(xList, cutoff=0.8) -> float:
     return fraction
 
 
-def movingDeprotonation(xList, cutoff=0.8):
+def movingDeprotonation(xList: list, cutoff: float = 0.8):
     """Returns a list containing the moving average deprotonation.
 
     Args:
@@ -88,12 +88,12 @@ def movingDeprotonation(xList, cutoff=0.8):
     return Av
 
 
-def getLambdaFileIndices(structure, resid):
+def getLambdaFileIndices(structure: str, resid: int):
     """Returns an array containing the lambda-file indices for the specified resid.
     Only takes into account ASPT, GLUT, HSPT.
 
     Args:
-        structure (string): pdb file name.
+        structure (str): pdb file name.
         resid (int): residue id.
 
     Returns:

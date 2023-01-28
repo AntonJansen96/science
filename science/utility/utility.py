@@ -29,11 +29,11 @@ class Stopwatch:
             print('{} took {:.3f} s'.format(self.description, stoptime))
 
 
-def gromacs(command, stdin=[], terminal=True, basepath='/usr/local/gromacs_constantph', logFile='gromacs.log'):
+def gromacs(command: str, stdin: list = [], terminal: bool = True, basepath: str = '/usr/local/gromacs_constantph', logFile: str = 'gromacs.log'):
     """Python function for handeling calls to GROMACS.
 
     Args:
-        command (string): GROMACS command, e.g. 'make_ndx -f protein.pdb'.
+        command (str): GROMACS command, e.g. 'make_ndx -f protein.pdb'.
         stdin (list, optional): list of input arguments. Defaults to [].
         terminal (bool, optional): print output to terminal. Defaults to True.
         basepath (str, optional): base path for GROMACS version to be used. Defaults to 'usr/local/gromacs_constantph'.
@@ -69,13 +69,13 @@ def gromacs(command, stdin=[], terminal=True, basepath='/usr/local/gromacs_const
     return process.returncode
 
 
-def createIndexFile(inputFile, outputFile, groups) -> str:
+def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
     """Creates an index (.ndx) file for GROMACS for a list of specified groups.
     These groups are strings that use the MDAnalysis selection syntax.
 
     Args:
-        inputFile (string): input structure file (pdb / gro) name.
-        outputFile (string): output file (ndx) name.
+        inputFile (str): input structure file (pdb / gro) name.
+        outputFile (str): output file (ndx) name.
         groups (list): list of strings. These strings use the MDAnalysis selection syntax.
 
     Returns:
@@ -118,11 +118,11 @@ def createIndexFile(inputFile, outputFile, groups) -> str:
     return outputFile
 
 
-def inputOptionHandler(message, options):
+def inputOptionHandler(message: str, options: list):
     """Handles input options when prompting a user.
 
     Args:
-        message (string): message for the user.
+        message (str): message for the user.
         options (list): list of options.
 
     Returns:
@@ -148,12 +148,12 @@ def inputOptionHandler(message, options):
         print("{} is not a valid option, please try again:\n".format(val))
 
 
-def triplet2letter(triplet):
+def triplet2letter(triplet: str):
     """Converts a resname triplet (e.g. GLU) to a single letter (e.g. E).
     Note: also does NA->Na+ and CL->Cl-.
 
     Args:
-        triplet (string): triplet.
+        triplet (str): triplet.
 
     Returns:
         char: single letter.
@@ -168,7 +168,7 @@ def triplet2letter(triplet):
     return dict[triplet]
 
 
-def ttestPass(sample1, sample2, alpha=0.05):
+def ttestPass(sample1: list, sample2: list, alpha: float = 0.05):
     """Returns True if the means of sample1 and sample2 differ SIGNIFICANTLY.
     That is, with a confidence interval of 1 - alpha %. Uses Welch's t-test.
 
@@ -186,7 +186,7 @@ def ttestPass(sample1, sample2, alpha=0.05):
     return bool(pvalue < alpha)
 
 
-def makeSuperDict(keyLists):
+def makeSuperDict(keyLists: list):
     """Initializes a (recursively) nested dictionary of dictionaries based on a list
     of lists of keys. Helpful for organizing large amounts of data.
 
@@ -252,7 +252,7 @@ def makeSuperDict(keyLists):
     return array[0]
 
 
-def genRestraints(pdb, fname, atomSelection):
+def genRestraints(pdb: str, fname: str, atomSelection: str):
     """Write a position restraint file for specified atomSelection.
     Note: funct = 1, fcx = fcy = fcz = 1000 (hardcoded).
 
@@ -284,14 +284,13 @@ def genRestraints(pdb, fname, atomSelection):
     print('And the following to your .mdp file:\n')
     print('define = -DPOSRES_NAME\n')
 
-def backup(name, verbose=True):
+def backup(name: str, verbose: bool = True):
     """Create a GROMACS-style (e.g. '#MD.log.1#') backup of file name.
 
     Args:
         name (str): (base) file name to backup.
         verbose (bool, optional): provide a user update. Defaults to True.
     """
-    
     count = 1
     while os.path.isfile(name):
         if os.path.isfile(f'#{name}.{count}#'):

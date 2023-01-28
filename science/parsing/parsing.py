@@ -1,12 +1,12 @@
 import pandas
 
 
-def loadxvg(fname, col=[0, 1], dt=1, b=0):
+def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
     """Loads an .xvg file into a list of lists.
     May also be used to load float columns from files in general.
 
     Args:
-        fname (string): file name.
+        fname (str): file name.
         col (list, optional): Columns to load. Defaults to [0, 1].
         dt (int, optional): Step size. Defaults to 1.
         b (int, optional): Starting point. Defaults to 0.
@@ -35,13 +35,13 @@ def loadxvg(fname, col=[0, 1], dt=1, b=0):
     return data
 
 
-def loadCol(fname, col=1, header=None):
+def loadCol(fname: str, col: int = 1, header=None):
     """Loads a column in a file into a list. Automatically determines the type
     for the values in the list. Defaults to strings if multiple types detected
     in column.
 
     Args:
-        fname (string): file name.
+        fname (str): file name.
         col (int): the column number (starts at 1). Defaults to 1.
         header (int): row numbers to consider as header. header=None means no header, header=0 means 1 header line, header=1 means 2 header lines etc. Defaults to None.
 
@@ -54,12 +54,12 @@ def loadCol(fname, col=1, header=None):
     return list(df.iloc[:, col - 1])
 
 
-def loadVal(fname, row, col, sep=None):
+def loadVal(fname: str, row: int, col: int, sep=None):
     """Retrieves a value from a file and returns it as a string.
     By default uses whitespace as a delimiter.
 
     Args:
-        fname (string): file name.
+        fname (str): file name.
         row (int): row number (starts at 1).
         col (int): column number (starts at 1).
         sep (str, optional): separator (white space by default). Defaults to None.
