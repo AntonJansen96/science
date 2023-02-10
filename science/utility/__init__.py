@@ -1,11 +1,14 @@
 """Contains a number of utility functions."""
 
-from .utility import Stopwatch           # noqa
-from .utility import gromacs             # noqa
-from .utility import createIndexFile     # noqa
-from .utility import inputOptionHandler  # noqa
-from .utility import triplet2letter      # noqa
-from .utility import ttestPass           # noqa
-from .utility import makeSuperDict       # noqa
-from .utility import genRestraints       # noqa
-from .utility import backup              # noqa
+__all__ = ['Stopwatch', 'gromacs', 'createIndexFile', 'inputOptionHandler', 'triplet2letter', 'ttestPass', 'makeSuperDict', 'genRestraints', 'backup']
+__author__ = 'Anton Jansen'
+
+from .utility import Stopwatch
+from .utility import gromacs
+from .utility import createIndexFile
+from .utility import inputOptionHandler
+from .utility import triplet2letter
+from .utility import ttestPass
+from .utility import makeSuperDict
+from .utility import genRestraints
+from .utility import backup

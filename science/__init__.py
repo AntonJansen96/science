@@ -1,5 +1,10 @@
-"""My science package. Contains cphmd, parsing, utility."""
+"""
+My science package. Contains cphmd, parsing, utility.
+"""
 
-from . import cphmd    # noqa
-from . import parsing  # noqa
-from . import utility  # noqa
+__all__ = ['cphmd', 'parsing', 'utility']
+__author__ = 'Anton Jansen'
+
+from . import cphmd
+from . import parsing
+from . import utility
