@@ -51,8 +51,7 @@ class Sanitize:
         if self.__exit and not self.__good:
             sys.exit(1)
         # If exit=False we return var, regardless of whether we've had an error.
-        else:
-            return self.var
+        return self.var
 
     def num(self, Type=None, Range: list = [], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
@@ -89,14 +88,14 @@ class Sanitize:
 
         return self.__endbehavior()
 
-    def string(self, Range: list = [], upper: bool = False, lower: bool = False, whitespace: bool = True):
+    def string(self, Range: list = [], upper: bool = False, lower: bool = False, ws: bool = True):
         """sanitize strings (str).
 
         Args:
             Range (list, optional): acceptable string length. Defaults to [].
             upper (bool, optional): all uppercase. Defaults to False.
             lower (bool, optional): all lowercase. Defaults to False.
-            whitespace (bool, optional): accept whitespace. Defaults to True.
+            ws (bool, optional): accept whitespace. Defaults to True.
 
         Returns:
             int: exitcode.
@@ -115,16 +114,17 @@ class Sanitize:
         if lower and not self.var.islower():
             self.__error('should be all lowercase')
 
-        if (not whitespace) and (self.var.count(' ') > 0):
+        if (not ws) and (self.var.count(' ') > 0):
             self.__error('cannot contain whitespace')
 
         return self.__endbehavior()
 
-    def path(self, ext: str = '', abs: bool = False):
+    def path(self, ext: str = '', out: bool = False, abs: bool = False):
         """Sanitize file paths (str).
 
         Args:
             ext (str, optional): acceptable extension(s). Defaults to ''.
+            out (bool, optional): path meant for creation/output? Defaults to False.
             abs (bool, optional): absolute path required. Defaults to False.
 
         Returns:
@@ -143,25 +143,31 @@ class Sanitize:
         elif os.path.isdir(self.var):
             self.__error('is a directory')
 
-        # File path should correspond to an exisiting file.
-        elif not os.path.exists(self.var):
-            self.__error('does not exist (or is a symbolic link)')
+        # (input) file path should correspond to an exisiting file.
+        elif not os.path.exists(self.var) and not out:
+            self.__error('corresponding file does not exist')
+
+        # (output) file DIRECTORY should already exist:
+        if out and not os.path.isdir(os.path.split(os.path.abspath(self.var))[0]):
+            self.__error('directory for output does not exist')
 
         # Check extension.
         if ext:
+            tail = os.path.split(self.var)[1]
+
             if type(ext) != list:
                 ext = [ext]
 
-            if self.var.count(' ') != 0:
+            if tail.count(' ') != 0:
                 self.__error('cannot contain whitespace')
 
-            if (self.var.count('.') == 0) or (self.var.count('.') > 1) or (self.var[-1] == '.'):
+            if (tail.count('.') == 0) or (tail.count('.') > 1) or (tail[-1] == '.'):
                 self.__error(f'ambiguous extension (should be {ext})')
 
-            elif self.var.index('.') == 0:
+            elif tail.index('.') == 0:
                 self.__error('cannot be just an extension')
 
-            elif self.var[self.var.index('.'):] not in ext:
+            elif tail[tail.index('.'):] not in ext:
                 self.__error(f'should have extension {ext}')
 
         # Check absolute file path.
