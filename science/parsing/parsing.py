@@ -5,7 +5,7 @@ import pandas
 class Sanitize:
     """Class for sanitizing user input of various types."""
 
-    def __init__(self, var, name: str = '', v: bool = True, exit: bool = False) -> None:
+    def __init__(self, var, name: str = '', v: bool = True, exit: bool = True) -> None:
         """Initialize Sanitize object.
 
         Args:
