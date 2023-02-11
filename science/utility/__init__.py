@@ -1,8 +1,9 @@
 """Contains a number of utility functions."""
 
-__all__ = ['Stopwatch', 'gromacs', 'createIndexFile', 'inputOptionHandler', 'triplet2letter', 'ttestPass', 'makeSuperDict', 'genRestraints', 'backup']
+__all__ = ['Sanitize', 'Stopwatch', 'gromacs', 'createIndexFile', 'inputOptionHandler', 'triplet2letter', 'ttestPass', 'makeSuperDict', 'genRestraints', 'backup']
 __author__ = 'Anton Jansen'
 
+from .utility import Sanitize
 from .utility import Stopwatch
 from .utility import gromacs
 from .utility import createIndexFile
