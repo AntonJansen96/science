@@ -80,7 +80,7 @@ class Sanitize:
                 self.__error('cannot be negative')
 
         # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit:
+        if self.__exit and not self.__good:
             sys.exit(1)
         else:
             return int(not self.__good)
@@ -115,7 +115,7 @@ class Sanitize:
             self.__error('cannot contain whitespace')
 
         # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit:
+        if self.__exit and not self.__good:
             sys.exit(1)
         else:
             return int(not self.__good)
@@ -169,7 +169,7 @@ class Sanitize:
             self.__error('should be an absolute file path')
 
         # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit:
+        if self.__exit and not self.__good:
             sys.exit(1)
         else:
             return int(not self.__good)
