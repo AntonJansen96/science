@@ -3,16 +3,17 @@
 import sys
 import string
 
+from science.parsing import Sanitize
 from science.parsing import Structure
 
 assert len(sys.argv) == 3, 'Specify source file and target file'
 
-inputFile  = sys.argv[1]
-outputFile = sys.argv[2]
+sourceFile = Sanitize(sys.argv[1]).path(ext=['.gro', '.pdb'])
+outputFile = Sanitize(sys.argv[2]).path(ext=['.pdb'], out=True)
 
 letters = string.ascii_uppercase + string.ascii_lowercase
 
-pdb = Structure(inputFile)
+pdb = Structure(sourceFile)
 
 ii = 0
 try:
