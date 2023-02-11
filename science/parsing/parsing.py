@@ -28,7 +28,7 @@ class Sanitize:
             msg (str): Information on the error.
         """
 
-        pre = ''  # Pre-string for error messages.
+        pre = 'SanitizeError: '  # Pre-string for error messages.
 
         if self.__verbose:
 
@@ -46,7 +46,15 @@ class Sanitize:
 
         self.__good = False
 
-    def num(self, Type=None, Range: list = [], signed: bool = False) -> int:
+    def __endbehavior(self):
+        # if exit=True and we've had an error, exit python.
+        if self.__exit and not self.__good:
+            sys.exit(1)
+        # If exit=False we return var, regardless of whether we've had an error.
+        else:
+            return self.var
+
+    def num(self, Type=None, Range: list = [], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
 
         Args:
@@ -79,13 +87,9 @@ class Sanitize:
             if signed and self.var < 0:
                 self.__error('cannot be negative')
 
-        # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit and not self.__good:
-            sys.exit(1)
-        else:
-            return int(not self.__good)
+        return self.__endbehavior()
 
-    def string(self, Range: list = [], upper: bool = False, lower: bool = False, whitespace: bool = True) -> int:
+    def string(self, Range: list = [], upper: bool = False, lower: bool = False, whitespace: bool = True):
         """sanitize strings (str).
 
         Args:
@@ -114,13 +118,9 @@ class Sanitize:
         if (not whitespace) and (self.var.count(' ') > 0):
             self.__error('cannot contain whitespace')
 
-        # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit and not self.__good:
-            sys.exit(1)
-        else:
-            return int(not self.__good)
+        return self.__endbehavior()
 
-    def path(self, ext: str = '', abs: bool = False) -> int:
+    def path(self, ext: str = '', abs: bool = False):
         """Sanitize file paths (str).
 
         Args:
@@ -168,11 +168,7 @@ class Sanitize:
         if abs and not os.path.isabs(self.var):
             self.__error('should be an absolute file path')
 
-        # Return exitcode (0 = good, 1 = bad) and optionally exit python.
-        if self.__exit and not self.__good:
-            sys.exit(1)
-        else:
-            return int(not self.__good)
+        return self.__endbehavior()
 
 
 def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
