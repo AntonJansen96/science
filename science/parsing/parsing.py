@@ -224,8 +224,13 @@ def loadCol(fname: str, col: int = 1, header=None):
     Returns:
         list: The column loaded into a list.
     """
+    try:
+        df = pandas.read_table(fname, header=header, delim_whitespace=True, na_filter=False)
 
-    df = pandas.read_table(fname, header=header, delim_whitespace=True, na_filter=False)
+    # Bug fix for when file / column is empty.
+    except pandas.errors.EmptyDataError:
+        print(f'loadCol: warning, \'{fname}\' is empty.')
+        return []
 
     return list(df.iloc[:, col - 1])
 
