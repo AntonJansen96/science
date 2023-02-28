@@ -1,5 +1,5 @@
 import MDAnalysis
-
+import numpy as np
 
 def protonation(xList: list, cutoff: float = 0.8) -> float:
     """Returns the average protonation, i.e. the fraction of frames in which
@@ -125,3 +125,32 @@ def getLambdaFileIndices(structure: str, resid: int):
 
         elif titratableResnames[idx] == 'HSPT':
             count += 3
+
+
+def theoreticalProtonation(pH: float, pKa: float) -> float:
+    """Returns theoretical protonation fraction as calculated by the Henderson-Hasselbach equation, 
+    i.e. protonation = 1 / ( 1 + exp(pH - pKa) ).
+
+    Args:
+        pH (float): (solvent) pH.
+        pKa (float): macroscopic pKa.
+
+    Returns:
+        float: protonation fraction.
+    """
+
+    return 1 / (1 + np.exp(pH - pKa))
+
+def theoreticalMicropKa(pH: float, protonation: float) -> float:
+    """Return the theoretical microscopic pKa as calculated by the Henderson-Hasselbalch equation,
+    i.e. pKa = pH - log(1 / f_p - 1)
+
+    Args:
+        pH (float): (solvent) pH.
+        protonation (float): protonation fraction.
+
+    Returns:
+        float: theoretical microscopic pKa.
+    """
+
+    return pH - np.log(1 / protonation  - 1)
