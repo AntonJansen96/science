@@ -1,6 +1,7 @@
 import MDAnalysis
 import numpy as np
 
+
 def protonation(xList: list, cutoff: float = 0.8) -> float:
     """Returns the average protonation, i.e. the fraction of frames in which
     the lambda-coordinate is < 1 - cutoff.
@@ -73,6 +74,7 @@ def movingDeprotonation(xList: list, cutoff: float = 0.8):
     Returns:
         list: list containing the moving average deprotonation.
     """
+
     Av = len(xList) * [0]
     lambda_proto = 1
     lambda_deproto = 0
@@ -99,6 +101,7 @@ def getLambdaFileIndices(structure: str, resid: int):
     Returns:
        list: List of lambda indices.
     """
+
     u                  = MDAnalysis.Universe(structure)
     numChains          = len(u.segments) - 1
     segmentAatoms      = u.segments[0].atoms
@@ -128,7 +131,7 @@ def getLambdaFileIndices(structure: str, resid: int):
 
 
 def theoreticalProtonation(pH: float, pKa: float) -> float:
-    """Returns theoretical protonation fraction as calculated by the Henderson-Hasselbach equation, 
+    """Returns theoretical protonation fraction as calculated by the Henderson-Hasselbach equation,
     i.e. protonation = 1 / ( 1 + exp(pH - pKa) ).
 
     Args:
@@ -140,6 +143,7 @@ def theoreticalProtonation(pH: float, pKa: float) -> float:
     """
 
     return 1 / (1 + np.exp(pH - pKa))
+
 
 def theoreticalMicropKa(pH: float, protonation: float) -> float:
     """Return the theoretical microscopic pKa as calculated by the Henderson-Hasselbalch equation,
@@ -153,4 +157,4 @@ def theoreticalMicropKa(pH: float, protonation: float) -> float:
         float: theoretical microscopic pKa.
     """
 
-    return pH - np.log(1 / protonation  - 1)
+    return pH - np.log(1 / protonation - 1)

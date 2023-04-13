@@ -2,9 +2,10 @@ import os
 
 
 class Residue:
-    """Stores the structural (pdb, gro) information for one residue.
-    """
-    def __init__(self, atoms, resname, chain, resid, x, y, z):
+    """Stores the structural (pdb, gro) information for one residue."""
+
+    def __init__(self, atoms: list, resname: str, chain: str, resid: int, x: list,
+                 y: list, z: list):
         """Initialize Residue object.
 
         Args:
@@ -16,20 +17,21 @@ class Residue:
             y (list): residue atom y-coordinates.
             z (list): residue atom z-coordinates.
         """
-        self.d_atoms   = atoms
+
+        self.d_atoms = atoms
         self.d_resname = resname
-        self.d_chain   = chain
-        self.d_resid   = resid
-        self.d_x       = x
-        self.d_y       = y
-        self.d_z       = z
+        self.d_chain = chain
+        self.d_resid = resid
+        self.d_x = x
+        self.d_y = y
+        self.d_z = z
 
 
 class Crystal:
-    """Stores the information pertaining the periodic box.
-    """
+    """Stores the information pertaining the periodic box."""
 
-    def __init__(self, a, b, c, alpha, beta, gamma, space, Z):
+    def __init__(self, a: float, b: float, c: float, alpha: float, beta: float, gamma: float,
+                 space: str, Z: int):
         """Initialize Crystal object.
 
         Args:
@@ -39,23 +41,24 @@ class Crystal:
             alpha (float): alpha (degrees).
             beta (float): beta (degrees).
             gamma (float): gamma (degrees).
-            space (char): space group.
+            space (str): space group.
             Z (int): z-value.
         """
-        self.d_a     = a
-        self.d_b     = b
-        self.d_c     = c
+
+        self.d_a = a
+        self.d_b = b
+        self.d_c = c
         self.d_alpha = alpha
-        self.d_beta  = beta
+        self.d_beta = beta
         self.d_gamma = gamma
         self.d_space = space
-        self.d_Z     = Z
+        self.d_Z = Z
 
 
 class Structure:
     """Parses and stores the information in a structure (pdb, gro) file.
-    Is also able to write (internal) information to either .pdb or .gro format.
-    """
+    Is also able to write (internal) information to either .pdb or .gro format."""
+
     def __init__(self, fname):
         """Initialize structure object.
 
@@ -81,7 +84,7 @@ class Structure:
         else:
             raise Exception("Target file should be a .pdb or .gro file!")
 
-    def write(self, fname):
+    def write(self, fname: str):
         """Handles writing of Structure object to a structure (pdb, gro) file.
 
         Args:

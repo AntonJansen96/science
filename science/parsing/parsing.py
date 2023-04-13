@@ -2,6 +2,7 @@ import sys
 import os
 import pandas
 
+
 class Sanitize:
     """Class for sanitizing user input of various types."""
 
@@ -10,7 +11,7 @@ class Sanitize:
 
         Args:
             var (Any): variable under consideration.
-            name (str, optional): Additional description of variable (for user message).
+            name (str, optional): additional description of variable (for user message).
             v (bool, optional): verbose. Defaults to True.
             exit (bool, optional): exit python upon encountering an error. Defaults to False.
         """
@@ -53,7 +54,7 @@ class Sanitize:
         # If exit=False we return var, regardless of whether we've had an error.
         return self.var
 
-    def num(self, Type=None, Range: list = [], signed: bool = False):
+    def num(self, Type=None, Range: list = [int], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
 
         Args:
@@ -88,7 +89,7 @@ class Sanitize:
 
         return self.__endbehavior()
 
-    def string(self, Range: list = [], upper: bool = False, lower: bool = False, ws: bool = True):
+    def string(self, Range: list = [int], upper: bool = False, lower: bool = False, ws: bool = True):
         """sanitize strings (str).
 
         Args:
@@ -183,9 +184,9 @@ def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
 
     Args:
         fname (str): file name.
-        col (list, optional): Columns to load. Defaults to [0, 1].
-        dt (int, optional): Step size. Defaults to 1.
-        b (int, optional): Starting point. Defaults to 0.
+        col (list, optional): columns to load. Defaults to [0, 1].
+        dt (int, optional): step size. Defaults to 1.
+        b (int, optional): starting point. Defaults to 0.
 
     Returns:
         list of lists : contains the columns that were loaded.
@@ -219,7 +220,8 @@ def loadCol(fname: str, col: int = 1, header=None):
     Args:
         fname (str): file name.
         col (int): the column number (starts at 1). Defaults to 1.
-        header (int): row numbers to consider as header. header=None means no header, header=0 means 1 header line, header=1 means 2 header lines etc. Defaults to None.
+        header (int): row numbers to consider as header. header=None means no header,
+        header=0 means 1 header line, header=1 means 2 header lines etc. Defaults to None.
 
     Returns:
         list: The column loaded into a list.

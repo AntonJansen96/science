@@ -7,8 +7,8 @@ import copy
 
 
 class Stopwatch:
-    """Stopwatch class. Helpful for profiling.
-    """
+    """Stopwatch class. Helpful for profiling."""
+
     def __init__(self, description=''):
         """Initialize Stopwatch object. Count starts upon object initialization.
 
@@ -242,7 +242,7 @@ def makeSuperDict(keyLists: list):
     # for key in List[0]:
     #     array[0][key] = copy.deepcopy(array[1])
 
-    array  = [copy.deepcopy({}) for _ in range(0, len(keyLists) - 1)]
+    array = [copy.deepcopy({}) for _ in range(0, len(keyLists) - 1)]
     array += [copy.deepcopy(keyLists[-1])]
 
     for idx in range(1, len(keyLists))[::-1]:
@@ -262,7 +262,7 @@ def genRestraints(pdb: str, fname: str, atomSelection: str):
         atomSelection (str): MDAnalysis style selection string.
     """
 
-    u   = MDAnalysis.Universe(pdb)
+    u = MDAnalysis.Universe(pdb)
     sel = u.select_atoms(atomSelection).atoms.indices
 
     with open(fname, 'w+') as file:
@@ -283,6 +283,7 @@ def genRestraints(pdb: str, fname: str, atomSelection: str):
     print('#endif\n')
     print('And the following to your .mdp file:\n')
     print('define = -DPOSRES_NAME\n')
+
 
 def backup(name: str, verbose: bool = True):
     """Create a GROMACS-style (e.g. '#MD.log.1#') backup of file name.
