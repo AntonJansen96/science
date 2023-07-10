@@ -1,6 +1,7 @@
 import sys
 import os
 import pandas
+import pickle
 
 
 class Sanitize:
@@ -258,3 +259,27 @@ def loadVal(fname: str, row: int, col: int, sep=None):
 
     except IndexError:
         return None
+
+
+def pickleDump(var, file: str, protocol: int = 5) -> None:
+    """Dumps a variable to a file name file using protocol 5 (most efficient).
+
+    Args:
+        var (any): variable name.
+        file (str): name of file to dump to.
+    """
+
+    pickle.dump(var, open(file, 'wb'), protocol)
+
+
+def pickleLoad(file: str):
+    """Loads a pickled variable from a file.
+
+    Args:
+        file (str): name of file to load from.
+
+    Returns:
+        any: variable that was loaded.
+    """
+
+    return pickle.load(open(file, 'rb'))
