@@ -2,6 +2,7 @@ import sys
 import os
 import pandas
 import pickle
+from datetime import datetime
 
 
 class Sanitize:
@@ -177,6 +178,160 @@ class Sanitize:
             self.__error('should be an absolute file path')
 
         return self.__endbehavior()
+
+
+class User:
+    """Provides logging and formats user updates, warnings, and errors."""
+
+    def __init__(self, baseName: str, verbosity: int, logFileName: str = '', maxLineLength=90):
+        """Initialize User object.
+
+        Args:
+            baseName (str): base message string.
+            verbosity (int): verbosity value. 0 = supress all, 1 = only warnings and errors, 2 = regular, 3 = verbose.
+            logFileName (str): name of log file (not specified means no logging).
+            maxLineLength (int): maximum length of sentence before a newline (does not consider length of preMessage etc).
+        """
+
+        self.baseName = baseName
+        self.verbosity = verbosity
+        self.logFileName = logFileName
+        self.maxLineLength = maxLineLength
+
+    def __log(self, message: str):
+        if self.logFileName:
+            with open(self.logFileName, 'a+') as logfile:
+                time = datetime.now().strftime("%Y/%m/%d|%H:%M:%S")
+                print(time + ' ' + message, file=logfile)
+
+    def __output(self, message: str):
+        """Handles output to terminal and (optionally) logging.
+
+        Args:
+            message (str): message to be printed/logged.
+        """
+
+        self.__log(message)
+        print(message)
+
+    def doInput(self) -> str:
+        """Handles input from terminal and (optionally) logging."""
+
+        string = input(self.baseName)
+        self.__log(string)
+        return string
+
+    def __base(self, message: str, preMessage: str = ''):
+        """Base method for handeling user messages.
+
+        Args:
+            message (str): message.
+            preMessage (str, optional): pre-message. Defaults to ''.
+        """
+
+        # If we input a dictionary of list as a message, print and return.
+        if isinstance(message, list) or isinstance(message, dict):
+            self.__output(message)
+            return
+
+        firstLineWritten = False
+        charCount = 0
+        currentLine = ''
+
+        for word in message.split(' '):
+
+            charCount += len(word) + 1
+
+            if charCount < self.maxLineLength:
+                currentLine += word + ' '
+            else:
+                self.__output(f"{self.baseName}{preMessage}{currentLine}")
+                firstLineWritten = True
+                charCount = len(word) + 1
+                currentLine = word + ' '
+
+            # This we add so that not every subsequent line has preMessage,
+            # but it is aligned nonetheless.
+            if firstLineWritten and preMessage != '':
+                preMessage = ' '.ljust(len(preMessage))
+
+        self.__output(f"{self.baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
+
+    def verbose(self, message: str):
+        """Print message when verbosity is high.
+
+        Args:
+            message (str): message.
+        """
+
+        if self.verbosity > 2:
+            self.__base(message)
+
+    def update(self, message: str):
+        """Print default message.
+
+        Args:
+            message (str): message.
+        """
+
+        if self.verbosity > 1:
+            self.__base(message)
+
+    def warning(self, message: str):
+        """Print warning message.
+
+        Args:
+            message (str): message.
+        """
+
+        if self.verbosity > 0:
+            self.__output(self.baseName)
+            self.__base(message, preMessage='WARNING - ')
+            self.__output(self.baseName)
+
+    def error(self, message: str):
+        """Print error message and sys.exit() the program.
+
+        Args:
+            message (str): message.
+        """
+
+        if self.verbosity > 0:
+            self.__output(self.baseName)
+            self.__base(message, preMessage='ERROR - ')
+            self.__output(self.baseName)
+
+        sys.exit()
+
+    def inputOptionHandler(self, message: str, options: list) -> int:
+        """Handles user input when options are required.
+
+        Args:
+            message (str): message.
+            options (list): list of strings describing the options. Starts counting from 0.
+
+        Returns:
+            int: number corresponding to the option selected by the user.
+        """
+
+        valids = []
+        msgstring = f"{self.baseName}{message}"
+
+        # Loop through the options list and create string for display
+        for idx in range(0, len(options)):
+            msgstring += f"\n{self.baseName}{idx}. {options[idx]}"
+            valids.append(str(idx))
+
+        while True:
+            self.__output(msgstring)
+            val = input(f"{self.baseName}Type a number: ")
+
+            if val in valids:
+                self.__output(f"{self.baseName}selected {val}")
+                self.__output('')
+                return int(val)
+
+            self.__output(f"{self.baseName}{val} is not a valid option, please try again:\n")
 
 
 def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
