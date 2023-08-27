@@ -1,5 +1,6 @@
 import MDAnalysis
 import numpy as np
+from science.parsing import loadCol
 
 
 def protonation(xList: list, cutoff: float = 0.8) -> float:
@@ -158,3 +159,43 @@ def theoreticalMicropKa(pH: float, protonation: float) -> float:
     """
 
     return pH - np.log(1 / protonation - 1)
+
+
+def extractCharges(proto: str, depro: str) -> None:
+    """Extract the titratable atoms and charges by comparing two .itp files. Assumes all headers ([atoms] etc.) are removed before running.
+
+    Args:
+        proto (str): .itp file name of protonated structure.
+        depro (str): .itp file name of deprotonated structure.
+    """
+
+    atoms_p   = loadCol(proto, 5)
+    charge_p  = loadCol(proto, 7)
+    atoms_dp  = loadCol(depro, 5)
+    charge_dp = loadCol(depro, 7)
+
+    protoDict = {}
+    for idx in range(0, len(atoms_p)):
+        protoDict[atoms_p[idx]] = charge_p[idx]
+
+    deproDict = {}
+    for idx in range(0, len(atoms_dp)):
+        deproDict[atoms_dp[idx]] = charge_dp[idx]
+
+    atoms = []
+    A = []
+    B = []
+    for key in protoDict:
+        try:
+            if protoDict[key] != deproDict[key]:
+                atoms.append(key)
+                A.append(protoDict[key])
+                B.append(deproDict[key])
+        except KeyError:
+            atoms.append(key)
+            A.append(protoDict[key])
+            B.append(0.000)
+
+    print("titratable atoms", atoms)
+    print("qqA", A, sum(A))
+    print("qqB_1", B, sum(B))
