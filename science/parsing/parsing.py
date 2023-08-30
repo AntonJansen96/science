@@ -53,8 +53,12 @@ class Sanitize:
         # if exit=True and we've had an error, exit python.
         if self.__exit and not self.__good:
             sys.exit(1)
-        # If exit=False we return var, regardless of whether we've had an error.
-        return self.var
+        # if exit=False and we've had an error, return None.
+        elif not self.__good:
+            return None
+        # If exit=False and we haven't had an error we're good.
+        else:
+            return self.var
 
     def num(self, Type=None, Range: list = [int], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
@@ -301,7 +305,7 @@ class User:
             self.__base(message, preMessage='ERROR - ')
             self.__output(self.baseName)
 
-        sys.exit()
+        sys.exit(1)
 
     def inputOptionHandler(self, message: str, options: list) -> int:
         """Handles user input when options are required.
