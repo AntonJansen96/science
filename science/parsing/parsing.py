@@ -187,24 +187,24 @@ class Sanitize:
 class User:
     """Provides logging and formats user updates, warnings, and errors."""
 
-    def __init__(self, baseName: str, verbosity: int, logFileName: str = '', maxLineLength=90):
+    def __init__(self, baseName: str = '', verbosity: int = 2, logFileName: str = '', maxLineLength: int = 90):
         """Initialize User object.
 
         Args:
-            baseName (str): base message string.
-            verbosity (int): verbosity value. 0 = supress all, 1 = only warnings and errors, 2 = regular, 3 = verbose.
+            baseName (str): base message string. Defaults to ''.
+            verbosity (int): verbosity value. 0 = supress all, 1 = only warnings and errors, 2 = regular, 3 = verbose. Defaults to 2.
             logFileName (str): name of log file (not specified means no logging).
-            maxLineLength (int): maximum length of sentence before a newline (does not consider length of preMessage etc).
+            maxLineLength (int): maximum length of sentence before a newline (does not consider length of preMessage etc). Defaults to 90.
         """
 
-        self.baseName = baseName
-        self.verbosity = verbosity
-        self.logFileName = logFileName
-        self.maxLineLength = maxLineLength
+        self.__baseName = baseName
+        self.__verbosity = verbosity
+        self.__logFileName = logFileName
+        self.__maxLineLength = maxLineLength
 
     def __log(self, message: str):
-        if self.logFileName:
-            with open(self.logFileName, 'a+') as logfile:
+        if self.__logFileName:
+            with open(self.__logFileName, 'a+') as logfile:
                 time = datetime.now().strftime("%Y/%m/%d|%H:%M:%S")
                 print(time + ' ' + message, file=logfile)
 
@@ -221,7 +221,7 @@ class User:
     def doInput(self) -> str:
         """Handles input from terminal and (optionally) logging."""
 
-        string = input(self.baseName)
+        string = input(self.__baseName)
         self.__log(string)
         return string
 
@@ -246,10 +246,10 @@ class User:
 
             charCount += len(word) + 1
 
-            if charCount < self.maxLineLength:
+            if charCount < self.__maxLineLength:
                 currentLine += word + ' '
             else:
-                self.__output(f"{self.baseName}{preMessage}{currentLine}")
+                self.__output(f"{self.__baseName}{preMessage}{currentLine}")
                 firstLineWritten = True
                 charCount = len(word) + 1
                 currentLine = word + ' '
@@ -259,7 +259,7 @@ class User:
             if firstLineWritten and preMessage != '':
                 preMessage = ' '.ljust(len(preMessage))
 
-        self.__output(f"{self.baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
+        self.__output(f"{self.__baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
 
     def verbose(self, message: str):
         """Print message when verbosity is high.
@@ -268,7 +268,7 @@ class User:
             message (str): message.
         """
 
-        if self.verbosity > 2:
+        if self.__verbosity > 2:
             self.__base(message)
 
     def update(self, message: str):
@@ -278,7 +278,7 @@ class User:
             message (str): message.
         """
 
-        if self.verbosity > 1:
+        if self.__verbosity > 1:
             self.__base(message)
 
     def warning(self, message: str):
@@ -288,10 +288,10 @@ class User:
             message (str): message.
         """
 
-        if self.verbosity > 0:
-            self.__output(self.baseName)
+        if self.__verbosity > 0:
+            self.__output(self.__baseName)
             self.__base(message, preMessage='WARNING - ')
-            self.__output(self.baseName)
+            self.__output(self.__baseName)
 
     def error(self, message: str):
         """Print error message and sys.exit() the program.
@@ -300,10 +300,10 @@ class User:
             message (str): message.
         """
 
-        if self.verbosity > 0:
-            self.__output(self.baseName)
+        if self.__verbosity > 0:
+            self.__output(self.__baseName)
             self.__base(message, preMessage='ERROR - ')
-            self.__output(self.baseName)
+            self.__output(self.__baseName)
 
         sys.exit(1)
 
@@ -319,23 +319,23 @@ class User:
         """
 
         valids = []
-        msgstring = f"{self.baseName}{message}"
+        msgstring = f"{self.__baseName}{message}"
 
         # Loop through the options list and create string for display
         for idx in range(0, len(options)):
-            msgstring += f"\n{self.baseName}{idx}. {options[idx]}"
+            msgstring += f"\n{self.__baseName}{idx}. {options[idx]}"
             valids.append(str(idx))
 
         while True:
             self.__output(msgstring)
-            val = input(f"{self.baseName}Type a number: ")
+            val = input(f"{self.__baseName}Type a number: ")
 
             if val in valids:
-                self.__output(f"{self.baseName}selected {val}")
+                self.__output(f"{self.__baseName}selected {val}")
                 self.__output('')
                 return int(val)
 
-            self.__output(f"{self.baseName}{val} is not a valid option, please try again:\n")
+            self.__output(f"{self.__baseName}{val} is not a valid option, please try again:\n")
 
 
 def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
