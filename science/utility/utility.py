@@ -29,23 +29,18 @@ class Stopwatch:
             print('{} took {:.3f} s'.format(self.description, stoptime))
 
 
-def gromacs(command: str, stdin: list = [], terminal: bool = True, basepath: str = '/usr/local/gromacs_constantph', logFile: str = 'gromacs.log'):
+def gromacs(command: str, stdin: list = [], terminal: bool = True, logFile: str = 'gromacs.log'):
     """Python function for handeling calls to GROMACS.
 
     Args:
-        command (str): GROMACS command, e.g. 'make_ndx -f protein.pdb'.
+        command (str): GROMACS command, e.g. 'editconf -f protein.pdb'.
         stdin (list, optional): list of input arguments. Defaults to [].
         terminal (bool, optional): print output to terminal. Defaults to True.
-        basepath (str, optional): base path for GROMACS version to be used. Defaults to 'usr/local/gromacs_constantph'.
         logFile (str, optional): log file to use when terminal=False. Defaults to 'gromacs.log'.
 
     Returns:
         int: return code (0 if things were successful).
     """
-
-    # If we don't pass envvars to subprocess (which happens by default) this works.
-    path_to_gmx = os.path.normpath(basepath + '/' + 'bin/gmx')
-    command = "{} {}".format(path_to_gmx, command)
 
     # Use the << EOF method to handle user input. Prepare string.
     if stdin:
@@ -55,10 +50,10 @@ def gromacs(command: str, stdin: list = [], terminal: bool = True, basepath: str
         command += xstr + 'EOF'
 
     if terminal:
-        process = subprocess.run(command, shell=True, env={})
+        process = subprocess.run('gmx ' + command, shell=True)
     else:
         with open(logFile, 'a+') as file:
-            process = subprocess.run(command, shell=True, stdout=file, stderr=file, env={})
+            process = subprocess.run('gmx ' + command, shell=True, stdout=file, stderr=file)
 
     if process.returncode != 0:
         if terminal:
