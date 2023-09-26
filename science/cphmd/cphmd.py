@@ -1,6 +1,188 @@
+import matplotlib
+import matplotlib.pyplot as plt
 import MDAnalysis
 import numpy as np
+from scipy.special import erf, erfinv
 from science.parsing import loadCol
+
+
+class BiasPotential:
+    """Constructs the bias potential for constant-pH simulations in Python."""
+
+    def __init__(self, dwpE: float) -> None:
+        """Construct BiasPotential object.
+        Iteratively computes optimal parameters for the U_min potential.
+
+        Args:
+            dwpE (float): bias potential energy barrier height (kJ/mol).
+        """
+        assert dwpE == 7.5, "Currently only 7.5 kJ/mol is supported..."
+        self.h = dwpE
+
+        # Compute some parameters for Uwall.
+        self.w = 1000  # Checked in constant_ph.cpp.
+        e1 = erfinv(1 - 2.0 / self.w)
+        e10 = erfinv(1 - 20.0 / self.w)
+        sig0 = 0.02  # Checked in constant_ph.cpp.
+        self.r = (e1 - e10) / (2 * sig0)
+        self.m = 2.0 * sig0 * (2.0 * e1 - e10) / (e1 - e10)
+
+        self.k = 0.5 * self.h     # Initial values for Umin parameters.
+        self.a = 0.05
+        self.b = -0.1
+
+        # Iteratively find Umin parameters k, a, b.
+        # Anton: this is not implemented (yet).
+
+        self.k = 4.7431           # Final value for dwpE = 7.5 kJ/mol.
+        self.a = 0.0435           # Final value for dwpE = 7.5 kJ/mol.
+        self.b = 0.0027           # Final value for dwpE = 7.5 kJ/mol.
+
+    def __Uwall(self, lamda: float) -> float:
+        A = 1 - erf(self.r * (lamda + self.m))
+        B = 1 + erf(self.r * (lamda - 1 - self.m))
+        return 0
+        return 0.5 * self.w * (A + B)
+
+    def __Umin(self, lamda: float) -> float:
+        A = -(lamda - 1 - self.b)**2 / (2 * self.a**2)
+        B = -(lamda + self.b)**2 / (2 * self.a**2)
+        return -self.k * (np.exp(A) + np.exp(B))
+
+    def __Ubarrier(self, lamda: float) -> float:
+        d = 0.5 * self.h
+        s = 0.3
+        return d * np.exp(-(lamda - 0.5)**2 / (2 * s**2))
+
+    def potential(self, lamda: float) -> float:
+        """Compute potential for given lambda coordinate value.
+
+        Args:
+            lamda (float): lamda coordinate.
+
+        Returns:
+            float: potential.
+        """
+        return self.__Uwall(lamda) + self.__Umin(lamda) + self.__Ubarrier(lamda)
+
+
+class InverseBoltzmann:
+    """For performing Inverse-Boltzmann related tasks such as adding a (bias)
+    potential to a replicas histogram or for adjusting dwpE."""
+
+    def __init__(self, baseName: str, coordsArray: list, Nbins: int = 35, Nrange=(-0.10, 1.10)) -> None:
+
+        matplotlib.rcParams.update({'font.size': 24})
+
+        self.baseName: str = baseName
+        self.Nbins: int = Nbins
+        self.Nrange: tuple = Nrange
+
+        self.binsArray: list = []
+        self.histArray: list = []
+        self.enerArray: list = []
+
+        for coords in coordsArray:
+            hist, bins = np.histogram(coords, bins=Nbins, range=self.Nrange, density=True)
+            bins = [(bins[i] + bins[i + 1]) / 2 for i in range(0, len(bins) - 1)]
+            self.histArray.append(hist)
+            self.binsArray.append(bins)
+
+            U = []
+            for p in hist:
+                U.append(8.3145 * 300 * -np.log(p))
+            self.enerArray.append([E / 1000. for E in U])  # J to kJ.
+
+        self.added: list = len(self.binsArray[0]) * [0]
+
+    def plot(self, name: str) -> None:
+
+        plt.figure(dpi=200)
+        for idx in range(len(self.binsArray)):
+            plt.plot(self.binsArray[idx], self.histArray[idx])
+        plt.xlim(self.Nrange)
+        plt.xlabel(r'$\lambda$-coordinate')
+        plt.ylabel('Probability density')
+        plt.tight_layout()
+        plt.savefig(f"{self.baseName}_{name}_hist.png")
+
+        plt.figure(dpi=200)
+        for idx in range(len(self.binsArray)):
+            plt.plot(self.binsArray[idx], self.enerArray[idx])
+        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.xlim(self.Nrange)
+        plt.ylim(-5, 20)
+        plt.xlabel(r'$\lambda$-coordinate')
+        plt.ylabel('Energy (kJ/mol)')
+        plt.tight_layout()
+        plt.savefig(f"{self.baseName}_{name}_ener.png")
+
+    def addTestPotential(self, dwpE=5):
+        for val in range(len(self.binsArray[0])):
+            if self.binsArray[0][val] > 0.2 and self.binsArray[0][val] < 0.8:
+                self.added[val] += dwpE
+                for idx in range(len(self.binsArray)):
+                    self.enerArray[idx][val] += dwpE
+                    self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+
+        plt.figure(dpi=200)
+        plt.plot(self.binsArray[0], self.added)
+        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.xlim(self.Nrange)
+        plt.ylim(-5, 20)
+        plt.xlabel(r'$\lambda$-coordinate')
+        plt.ylabel('Energy (kJ/mol)')
+        plt.tight_layout()
+        plt.savefig(f"{self.baseName}_added.png")
+
+    def addBiasPotential(self, dwpE=7.5):
+        bias = BiasPotential(dwpE)
+
+        for val in range(len(self.binsArray[0])):
+            E = bias.potential(self.binsArray[0][val])
+            self.added[val] += E
+            for idx in range(len(self.binsArray)):
+                self.enerArray[idx][val] += E
+                self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+
+        plt.figure(dpi=200)
+        plt.plot(self.binsArray[0], self.added)
+        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.xlim(self.Nrange)
+        plt.ylim(-5, 20)
+        plt.xlabel(r'$\lambda$-coordinate')
+        plt.ylabel('Energy (kJ/mol)')
+        plt.tight_layout()
+        plt.savefig(f"{self.baseName}_added.png")
+
+    def addpHPotential(self, pH: float, pKa: float):
+        for val in range(len(self.binsArray[0])):
+            E = 8.3145 * 300 * np.log(10)
+            r = 13.51   # From bias potential 7.5 kJ/mol.
+            a = 0.0435  # From bias potential 7.5 kJ/mol.
+
+            k1 = 2.5 * r    # Where r comes from the bias potential parameters...
+            x0 = 2 * a      # Where a comes from the bias potential parameters...
+            if pKa > pH:
+                E *= 1 / (1 + np.exp(-2 * k1 * (self.binsArray[0][val] - 1 + x0)))
+            else:
+                E *= 1 / (1 + np.exp(-2 * k1 * (self.binsArray[0][val] - x0)))
+            E /= 1000.0
+
+            self.added[val] += E
+            for idx in range(len(self.binsArray)):
+                self.enerArray[idx][val] += E
+                self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+
+        plt.figure(dpi=200)
+        plt.plot(self.binsArray[0], self.added)
+        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.xlim(self.Nrange)
+        # plt.ylim(-5, 20)
+        plt.xlabel(r'$\lambda$-coordinate')
+        plt.ylabel('Energy (kJ/mol)')
+        plt.tight_layout()
+        plt.savefig(f"{self.baseName}_added.png")
 
 
 def protonation(xList: list, cutoff: float = 0.8) -> float:

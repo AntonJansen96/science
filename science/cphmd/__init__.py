@@ -1,8 +1,10 @@
 """Contains general CpHMD-related functions."""
 
-__all__ = ['protonation', 'deprotonation', 'movingDeprotonation', 'getLambdaFileIndices', 'theoreticalProtonation', 'theoreticalMicropKa', 'extractCharges']
+__all__ = ['BiasPotential', 'InverseBoltzmann', 'protonation', 'deprotonation', 'movingDeprotonation', 'getLambdaFileIndices', 'theoreticalProtonation', 'theoreticalMicropKa', 'extractCharges']
 __author__ = 'Anton Jansen'
 
+from .cphmd import BiasPotential
+from .cphmd import InverseBoltzmann
 from .cphmd import protonation
 from .cphmd import deprotonation
 from .cphmd import movingDeprotonation
