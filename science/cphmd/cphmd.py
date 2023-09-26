@@ -93,7 +93,7 @@ def movingDeprotonation(xList: list, cutoff: float = 0.8):
 
 def getLambdaFileIndices(structure: str, resid: int):
     """Returns an array containing the lambda-file indices for the specified resid.
-    Only takes into account ASPT, GLUT, HSPT.
+    Takes into account ASPT, GLUT, HSPT, ARGT, LYST, TYRT.
 
     Args:
         structure (str): pdb file name.
@@ -106,12 +106,12 @@ def getLambdaFileIndices(structure: str, resid: int):
     u                  = MDAnalysis.Universe(structure)
     numChains          = len(u.segments) - 1
     segmentAatoms      = u.segments[0].atoms
-    titratableAtoms    = segmentAatoms.select_atoms('resname ASPT GLUT HSPT')
+    titratableAtoms    = segmentAatoms.select_atoms('resname ASPT GLUT HSPT ARGT LYST TYRT')
     titratableResnames = list(titratableAtoms.residues.resnames)
     titratableResids   = list(titratableAtoms.residues.resids)
     targetidx          = titratableResids.index(resid)
 
-    numASPTGLUT        = len(segmentAatoms.select_atoms('resname ASPT GLUT').residues)
+    numASPTGLUT        = len(segmentAatoms.select_atoms('resname ASPT GLUT ARGT LYST TYRT').residues)
     numHSPT            = len(segmentAatoms.select_atoms('resname HSPT').residues)
     factor             = numASPTGLUT + 3 * numHSPT
 
@@ -124,7 +124,7 @@ def getLambdaFileIndices(structure: str, resid: int):
                 array.append(count + ii * factor)
             return array
 
-        if titratableResnames[idx] in ['ASPT', 'GLUT']:
+        if titratableResnames[idx] in ['ASPT', 'GLUT', 'ARGT', 'LYST', 'TYRT']:
             count += 1
 
         elif titratableResnames[idx] == 'HSPT':
