@@ -381,3 +381,37 @@ def extractCharges(proto: str, depro: str) -> None:
     print("titratable atoms", atoms)
     print("qqA", A, sum(A))
     print("qqB_1", B, sum(B))
+
+
+def plotdVdl(dvdl: list, name: list = ['curve'], Nrange: tuple = (-0.1, 1.1)) -> None:
+    """Makes a (combined) plot of the specified dV/dl coefficients.
+
+    Args:
+        dvdl (list): list of dV/dl coefficients in lambdagrouptypes.dat/.mdp format.
+        name (list): list of names belonging to the sets of dV/dl coefficients.
+        Nrange (tuple): desired lambda coordinate range.
+    """
+
+    matplotlib.rcParams.update({'font.size': 18})
+    plt.figure(dpi=200)
+
+    coords = np.arange(Nrange[0], Nrange[1], 0.01)
+
+    for ii in range(0, len(dvdl)):
+
+        coeffs = [float(val) for val in dvdl[ii].split()][::-1]
+        energies = []
+
+        for coord in coords:
+            val = 0
+            for idx in range(0, len(coeffs)):
+                val += coeffs[idx] * coord**idx
+            energies.append(val)
+
+        plt.plot(coords, energies, label=name[ii])
+
+    plt.legend()
+    plt.xlabel(r"$\lambda$-coordinate")
+    plt.ylabel("Energy (kJ/mol)")
+    plt.tight_layout()
+    plt.savefig('dvdlplot.png')
