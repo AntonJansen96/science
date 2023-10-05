@@ -41,7 +41,6 @@ class BiasPotential:
     def __Uwall(self, lamda: float) -> float:
         A = 1 - erf(self.r * (lamda + self.m))
         B = 1 + erf(self.r * (lamda - 1 - self.m))
-        return 0
         return 0.5 * self.w * (A + B)
 
     def __Umin(self, lamda: float) -> float:
@@ -110,6 +109,7 @@ class InverseBoltzmann:
         for idx in range(len(self.binsArray)):
             plt.plot(self.binsArray[idx], self.enerArray[idx])
         plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.hlines(y=min(self.enerArray[idx]), xmin=-0.1, xmax=1.1, linestyles='--', linewidth=0.5)
         plt.xlim(self.Nrange)
         plt.ylim(-5, 20)
         plt.xlabel(r'$\lambda$-coordinate')
@@ -120,16 +120,16 @@ class InverseBoltzmann:
     def addTestPotential(self, dwpE=5):
         for val in range(len(self.binsArray[0])):
             if self.binsArray[0][val] > 0.2 and self.binsArray[0][val] < 0.8:
-                self.added[val] += dwpE
+                self.added[val] -= dwpE
                 for idx in range(len(self.binsArray)):
-                    self.enerArray[idx][val] += dwpE
+                    self.enerArray[idx][val] -= dwpE
                     self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
 
         plt.figure(dpi=200)
         plt.plot(self.binsArray[0], self.added)
         plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
         plt.xlim(self.Nrange)
-        plt.ylim(-5, 20)
+        plt.ylim(-10, 20)
         plt.xlabel(r'$\lambda$-coordinate')
         plt.ylabel('Energy (kJ/mol)')
         plt.tight_layout()
@@ -344,7 +344,8 @@ def theoreticalMicropKa(pH: float, protonation: float) -> float:
 
 
 def extractCharges(proto: str, depro: str) -> None:
-    """Extract the titratable atoms and charges by comparing two .itp files. Assumes all headers ([atoms] etc.) are removed before running.
+    """Extract the titratable atoms and charges by comparing two .itp files.
+    Assumes all headers ([atoms] etc.) are removed before running.
 
     Args:
         proto (str): .itp file name of protonated structure.
