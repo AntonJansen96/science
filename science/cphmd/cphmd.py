@@ -313,7 +313,7 @@ def getLambdaFileIndices(universe: MDAnalysis.Universe, resid: int, numChains: i
 
 def theoreticalProtonation(pH: float, pKa: float) -> float:
     """Returns theoretical protonation fraction as calculated by the Henderson-Hasselbach equation,
-    i.e. protonation = 1 / ( 1 + exp(pH - pKa) ).
+    i.e. protonation = 1 / (1 + 10^(pH - pKa)).
 
     Args:
         pH (float): (solvent) pH.
@@ -328,7 +328,7 @@ def theoreticalProtonation(pH: float, pKa: float) -> float:
 
 def theoreticalMicropKa(pH: float, protonation: float) -> float:
     """Return the theoretical microscopic pKa as calculated by the Henderson-Hasselbalch equation,
-    i.e. pKa = pH - log(1 / f_p - 1)
+    i.e. pKa = pH - log_10(1 / f_p - 1)
 
     Args:
         pH (float): (solvent) pH.
