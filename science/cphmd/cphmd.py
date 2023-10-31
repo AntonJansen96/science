@@ -323,7 +323,7 @@ def theoreticalProtonation(pH: float, pKa: float) -> float:
         float: protonation fraction.
     """
 
-    return 1 / (1 + np.exp(pH - pKa))
+    return 1 / (1 + 10**(pH - pKa))
 
 
 def theoreticalMicropKa(pH: float, protonation: float) -> float:
@@ -338,7 +338,7 @@ def theoreticalMicropKa(pH: float, protonation: float) -> float:
         float: theoretical microscopic pKa.
     """
 
-    return pH - np.log(1 / protonation - 1)
+    return pH - np.log10(1 / protonation - 1)
 
 
 def extractCharges(proto: str, depro: str) -> None:
