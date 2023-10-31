@@ -273,21 +273,19 @@ def movingDeprotonation(xList: list, cutoff: float = 0.8):
     return Av
 
 
-def getLambdaFileIndices(structure: str, resid: int):
+def getLambdaFileIndices(universe: MDAnalysis.Universe, resid: int, numChains: int = 5):
     """Returns an array containing the lambda-file indices for the specified resid.
     Takes into account ASPT, GLUT, HSPT, ARGT, LYST, TYRT.
 
     Args:
-        structure (str): pdb file name.
-        resid (int): residue id.
+        universe (MDAnalysis.Universe): MDAnalysis universe variable containing the structure.
+        resid (int): titratable residue resid.
 
     Returns:
-       list: List of lambda indices.
+       list: corresponding cphmd-coord numbers.
     """
 
-    u                  = MDAnalysis.Universe(structure)
-    numChains          = len(u.segments) - 1
-    segmentAatoms      = u.segments[0].atoms
+    segmentAatoms      = universe.select_atoms("chainID A")
     titratableAtoms    = segmentAatoms.select_atoms('resname ASPT GLUT HSPT ARGT LYST TYRT')
     titratableResnames = list(titratableAtoms.residues.resnames)
     titratableResids   = list(titratableAtoms.residues.resids)
