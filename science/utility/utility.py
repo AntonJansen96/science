@@ -296,3 +296,34 @@ def backup(name: str, verbose: bool = True):
             if verbose:
                 print(f'Backed up {name} to #{name}.{count}#')
             return
+
+
+def LJPotential(r: float, e_ij: float, s_ij: float) -> float:
+    """Lennard-Jones potential.
+
+    Args:
+        r (float): distance between two atoms (nm).
+        e_ij (float): interaction strength (kJ/mol).
+        s_ij (float): equilibrium distance (nm).
+
+    Returns:
+        float: interaction energy (kJ/mol).
+    """
+
+    return 4 * e_ij * ( (s_ij / r)**12 - (s_ij / r)**6 )
+
+
+def CoulombPotential(r: float, qi: float, qj: float) -> float:
+    """Coulomb potential.
+
+    Args:
+        r (float): distance between two charges in nm.
+        qi (float): atomic unit charge of atom i.
+        qj (float): atomic unit charge of atom j.
+
+    Returns:
+        float: interaction energy (kJ/mol).
+    """
+
+    # factor = 0.001 * N_A * (1 / 4 * pi * e0) * C * C * 1e9
+    return 138.935458 * qi * qj / r
