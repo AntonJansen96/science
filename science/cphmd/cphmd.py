@@ -6,20 +6,15 @@ from scipy.special import erf, erfinv
 from science.parsing import loadCol
 
 
-class BiasPotential:
-    """Constructs the bias potential for constant-pH simulations in Python."""
+class GenPotentials:
+    """Constructs the bias and pH potentials used in CpHMD in Python."""
 
-    def __init__(self, dwpE: float) -> None:
-        """Construct BiasPotential object.
-        Iteratively computes optimal parameters for the U_min potential.
+    def __init__(self, dwpE: float, pKa: float, pH: float) -> None:
+        self.h = dwpE       # User level input parameters.
+        self.pKa = pKa
+        self.pH = pH
 
-        Args:
-            dwpE (float): bias potential energy barrier height (kJ/mol).
-        """
-        assert dwpE == 7.5, "Currently only 7.5 kJ/mol is supported..."
-        self.h = dwpE
-
-        # Compute some parameters for Uwall.
+        self.s = 0.30
         self.w = 1000  # Checked in constant_ph.cpp.
         e1 = erfinv(1 - 2.0 / self.w)
         e10 = erfinv(1 - 20.0 / self.w)
@@ -27,16 +22,16 @@ class BiasPotential:
         self.r = (e1 - e10) / (2 * sig0)
         self.m = 2.0 * sig0 * (2.0 * e1 - e10) / (e1 - e10)
 
-        self.k = 0.5 * self.h     # Initial values for Umin parameters.
-        self.a = 0.05
-        self.b = -0.1
+        # self.k = 0.5 * self.h   # Initial values for Umin parameters.
+        # self.a = 0.05
+        # self.b = -0.1
 
         # Iteratively find Umin parameters k, a, b.
         # Anton: this is not implemented (yet).
 
-        self.k = 4.7431           # Final value for dwpE = 7.5 kJ/mol.
-        self.a = 0.0435           # Final value for dwpE = 7.5 kJ/mol.
-        self.b = 0.0027           # Final value for dwpE = 7.5 kJ/mol.
+        self.k = 4.7431   # Final value for dwpE = 7.5 kJ/mol.
+        self.a = 0.0435   # Final value for dwpE = 7.5 kJ/mol.
+        self.b = 0.0027   # Final value for dwpE = 7.5 kJ/mol.
 
     def __Uwall(self, lamda: float) -> float:
         A = 1 - erf(self.r * (lamda + self.m))
@@ -50,19 +45,22 @@ class BiasPotential:
 
     def __Ubarrier(self, lamda: float) -> float:
         d = 0.5 * self.h
-        s = 0.3
-        return d * np.exp(-(lamda - 0.5)**2 / (2 * s**2))
+        return d * np.exp(-(lamda - 0.5)**2 / (2 * self.s**2))
 
-    def potential(self, lamda: float) -> float:
-        """Compute potential for given lambda coordinate value.
-
-        Args:
-            lamda (float): lamda coordinate.
-
-        Returns:
-            float: potential.
-        """
+    def U_bias(self, lamda: float) -> float:
         return self.__Uwall(lamda) + self.__Umin(lamda) + self.__Ubarrier(lamda)
+
+    def U_pH(self, lamda: float) -> float:
+        ph_prefactor = 0.001 * 8.3145 * 300 * np.log(10) * (self.pKa - self.pH)    
+        k1 = 2.5 * self.r
+        x0 = 2 * self.a
+
+        if self.pH > self.pKa:
+            ph_fraction = 1 / (1 + np.exp(-2 * k1 * (lamda - 1 + x0 * self.s)))
+        else:
+            ph_fraction = 1 / (1 + np.exp(-2 * k1 * (lamda - x0)))
+
+        return ph_prefactor * ph_fraction
 
 
 class InverseBoltzmann:
