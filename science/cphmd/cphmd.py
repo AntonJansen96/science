@@ -10,6 +10,8 @@ class GenPotentials:
     """Constructs the bias and pH potentials used in CpHMD in Python."""
 
     def __init__(self, dwpE: float, pKa: float, pH: float) -> None:
+        assert dwpE in [0, 7.5], "currently only dwpE 7.5 or 0.0 supported!"
+
         self.h = dwpE       # User level input parameters.
         self.pKa = pKa
         self.pH = pH
@@ -48,9 +50,25 @@ class GenPotentials:
         return d * np.exp(-(lamda - 0.5)**2 / (2 * self.s**2))
 
     def U_bias(self, lamda: float) -> float:
+        """Bias potential.
+
+        Args:
+            lamda (float): lambda coordinate value.
+
+        Returns:
+            float: potential (kJ/mol).
+        """
         return self.__Uwall(lamda) + self.__Umin(lamda) + self.__Ubarrier(lamda)
 
     def U_pH(self, lamda: float) -> float:
+        """Henderson-Hasselbalch based pH potential.
+
+        Args:
+            lamda (float): lambda coordinate value.
+
+        Returns:
+            float: potential (kJ/mol).
+        """
         ph_prefactor = 0.001 * 8.3145 * 300 * np.log(10) * (self.pKa - self.pH)    
         k1 = 2.5 * self.r
         x0 = 2 * self.a
