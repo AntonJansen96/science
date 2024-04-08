@@ -4,7 +4,7 @@
 
 import sys
 
-assert len(sys.argv) == 3, 'Specify source file and target file'
+assert len(sys.argv) == 3, "Specify source file and target file"
 
 sourceFile = sys.argv[1]
 targetFile = sys.argv[2]
@@ -13,23 +13,27 @@ targetFile = sys.argv[2]
 
 with open(sourceFile) as file:
     for line in file.read().splitlines():
-        if 'set viewpoints(' in line:
+        if "set viewpoints(" in line:
             camera = line
             break
 
 # Process camera line further
 
 for idx in range(0, len(camera)):
-    if camera[idx] == '{':
+    if camera[idx] == "{":
         camera = camera[idx:]
         break
 
+
 def writeViewBlock(file):
-    file.write('\n# VIEWPOINT\n')
-    file.write(f'molinfo [molinfo top] set {{center_matrix rotate_matrix scale_matrix global_matrix}} {camera}\n')
+    file.write("\n# VIEWPOINT\n")
+    file.write(
+        f"molinfo [molinfo top] set {{center_matrix rotate_matrix scale_matrix global_matrix}} {camera}\n"
+    )
+
 
 # Write viewpoint block to target file:
-with open(targetFile, 'a+') as file:
+with open(targetFile, "a+") as file:
     writeViewBlock(file)
 
 # Rewrite source file to only consist of the view block:

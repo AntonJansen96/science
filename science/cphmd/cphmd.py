@@ -9,7 +9,7 @@ class GenPotentials:
     def __init__(self, dwpE: float, pKa: float, pH: float) -> None:
         assert dwpE in [0, 7.5], "currently only dwpE 7.5 or 0.0 supported!"
 
-        self.h = dwpE       # User level input parameters.
+        self.h = dwpE  # User level input parameters.
         self.pKa = pKa
         self.pH = pH
 
@@ -28,9 +28,9 @@ class GenPotentials:
         # Iteratively find Umin parameters k, a, b.
         # Anton: this is not implemented (yet).
 
-        self.k = 4.7431   # Final value for dwpE = 7.5 kJ/mol.
-        self.a = 0.0435   # Final value for dwpE = 7.5 kJ/mol.
-        self.b = 0.0027   # Final value for dwpE = 7.5 kJ/mol.
+        self.k = 4.7431  # Final value for dwpE = 7.5 kJ/mol.
+        self.a = 0.0435  # Final value for dwpE = 7.5 kJ/mol.
+        self.b = 0.0027  # Final value for dwpE = 7.5 kJ/mol.
 
     def __Uwall(self, lamda: float) -> float:
         A = 1 - erf(self.r * (lamda + self.m))
@@ -38,13 +38,13 @@ class GenPotentials:
         return 0.5 * self.w * (A + B)
 
     def __Umin(self, lamda: float) -> float:
-        A = -(lamda - 1 - self.b)**2 / (2 * self.a**2)
-        B = -(lamda + self.b)**2 / (2 * self.a**2)
+        A = -((lamda - 1 - self.b) ** 2) / (2 * self.a**2)
+        B = -((lamda + self.b) ** 2) / (2 * self.a**2)
         return -self.k * (np.exp(A) + np.exp(B))
 
     def __Ubarrier(self, lamda: float) -> float:
         d = 0.5 * self.h
-        return d * np.exp(-(lamda - 0.5)**2 / (2 * self.s**2))
+        return d * np.exp(-((lamda - 0.5) ** 2) / (2 * self.s**2))
 
     def U_bias(self, lamda: float) -> float:
         """Bias potential.
@@ -66,7 +66,7 @@ class GenPotentials:
         Returns:
             float: potential (kJ/mol).
         """
-        ph_prefactor = 0.001 * 8.3145 * 300 * np.log(10) * (self.pKa - self.pH)    
+        ph_prefactor = 0.001 * 8.3145 * 300 * np.log(10) * (self.pKa - self.pH)
         k1 = 2.5 * self.r
         x0 = 2 * self.a
 
@@ -82,12 +82,14 @@ class InverseBoltzmann:
     """For performing Inverse-Boltzmann related tasks such as adding a (bias)
     potential to a replicas histogram or for adjusting dwpE."""
 
-    def __init__(self, baseName: str, coordsArray: list, Nbins: int = 35, Nrange=(-0.10, 1.10)) -> None:
+    def __init__(
+        self, baseName: str, coordsArray: list, Nbins: int = 35, Nrange=(-0.10, 1.10)
+    ) -> None:
 
         # Lazy/deferred import.
         import matplotlib
 
-        matplotlib.rcParams.update({'font.size': 24})
+        matplotlib.rcParams.update({"font.size": 24})
 
         self.baseName: str = baseName
         self.Nbins: int = Nbins
@@ -98,7 +100,9 @@ class InverseBoltzmann:
         self.enerArray: list = []
 
         for coords in coordsArray:
-            hist, bins = np.histogram(coords, bins=Nbins, range=self.Nrange, density=True)
+            hist, bins = np.histogram(
+                coords, bins=Nbins, range=self.Nrange, density=True
+            )
             bins = [(bins[i] + bins[i + 1]) / 2 for i in range(0, len(bins) - 1)]
             self.histArray.append(hist)
             self.binsArray.append(bins)
@@ -106,7 +110,7 @@ class InverseBoltzmann:
             U = []
             for p in hist:
                 U.append(8.3145 * 300 * -np.log(p))
-            self.enerArray.append([E / 1000. for E in U])  # J to kJ.
+            self.enerArray.append([E / 1000.0 for E in U])  # J to kJ.
 
         self.added: list = len(self.binsArray[0]) * [0]
 
@@ -116,20 +120,28 @@ class InverseBoltzmann:
         for idx in range(len(self.binsArray)):
             plt.plot(self.binsArray[idx], self.histArray[idx])
         plt.xlim(self.Nrange)
-        plt.xlabel(r'$\lambda$-coordinate')
-        plt.ylabel('Probability density')
+        plt.xlabel(r"$\lambda$-coordinate")
+        plt.ylabel("Probability density")
         plt.tight_layout()
         plt.savefig(f"{self.baseName}_{name}_hist.png")
 
         plt.figure(dpi=200)
         for idx in range(len(self.binsArray)):
             plt.plot(self.binsArray[idx], self.enerArray[idx])
-        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
-        plt.hlines(y=min(self.enerArray[idx]), xmin=-0.1, xmax=1.1, linestyles='--', linewidth=0.5)
+        plt.hlines(
+            y=0, xmin=-0.1, xmax=1.1, linestyles="--", color="black", linewidth=0.5
+        )
+        plt.hlines(
+            y=min(self.enerArray[idx]),
+            xmin=-0.1,
+            xmax=1.1,
+            linestyles="--",
+            linewidth=0.5,
+        )
         plt.xlim(self.Nrange)
         plt.ylim(-5, 20)
-        plt.xlabel(r'$\lambda$-coordinate')
-        plt.ylabel('Energy (kJ/mol)')
+        plt.xlabel(r"$\lambda$-coordinate")
+        plt.ylabel("Energy (kJ/mol)")
         plt.tight_layout()
         plt.savefig(f"{self.baseName}_{name}_ener.png")
 
@@ -139,15 +151,19 @@ class InverseBoltzmann:
                 self.added[val] -= dwpE
                 for idx in range(len(self.binsArray)):
                     self.enerArray[idx][val] -= dwpE
-                    self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+                    self.histArray[idx][val] = np.exp(
+                        -1000 * self.enerArray[idx][val] / (8.3145 * 300)
+                    )
 
         plt.figure(dpi=200)
         plt.plot(self.binsArray[0], self.added)
-        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.hlines(
+            y=0, xmin=-0.1, xmax=1.1, linestyles="--", color="black", linewidth=0.5
+        )
         plt.xlim(self.Nrange)
         plt.ylim(-10, 20)
-        plt.xlabel(r'$\lambda$-coordinate')
-        plt.ylabel('Energy (kJ/mol)')
+        plt.xlabel(r"$\lambda$-coordinate")
+        plt.ylabel("Energy (kJ/mol)")
         plt.tight_layout()
         plt.savefig(f"{self.baseName}_added.png")
 
@@ -159,26 +175,30 @@ class InverseBoltzmann:
             self.added[val] += E
             for idx in range(len(self.binsArray)):
                 self.enerArray[idx][val] += E
-                self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+                self.histArray[idx][val] = np.exp(
+                    -1000 * self.enerArray[idx][val] / (8.3145 * 300)
+                )
 
         plt.figure(dpi=200)
         plt.plot(self.binsArray[0], self.added)
-        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.hlines(
+            y=0, xmin=-0.1, xmax=1.1, linestyles="--", color="black", linewidth=0.5
+        )
         plt.xlim(self.Nrange)
         plt.ylim(-5, 20)
-        plt.xlabel(r'$\lambda$-coordinate')
-        plt.ylabel('Energy (kJ/mol)')
+        plt.xlabel(r"$\lambda$-coordinate")
+        plt.ylabel("Energy (kJ/mol)")
         plt.tight_layout()
         plt.savefig(f"{self.baseName}_added.png")
 
     def addpHPotential(self, pH: float, pKa: float):
         for val in range(len(self.binsArray[0])):
             E = 8.3145 * 300 * np.log(10)
-            r = 13.51   # From bias potential 7.5 kJ/mol.
+            r = 13.51  # From bias potential 7.5 kJ/mol.
             a = 0.0435  # From bias potential 7.5 kJ/mol.
 
-            k1 = 2.5 * r    # Where r comes from the bias potential parameters...
-            x0 = 2 * a      # Where a comes from the bias potential parameters...
+            k1 = 2.5 * r  # Where r comes from the bias potential parameters...
+            x0 = 2 * a  # Where a comes from the bias potential parameters...
             if pKa > pH:
                 E *= 1 / (1 + np.exp(-2 * k1 * (self.binsArray[0][val] - 1 + x0)))
             else:
@@ -188,15 +208,19 @@ class InverseBoltzmann:
             self.added[val] += E
             for idx in range(len(self.binsArray)):
                 self.enerArray[idx][val] += E
-                self.histArray[idx][val] = np.exp(-1000 * self.enerArray[idx][val] / (8.3145 * 300))
+                self.histArray[idx][val] = np.exp(
+                    -1000 * self.enerArray[idx][val] / (8.3145 * 300)
+                )
 
         plt.figure(dpi=200)
         plt.plot(self.binsArray[0], self.added)
-        plt.hlines(y=0, xmin=-0.1, xmax=1.1, linestyles='--', color='black', linewidth=0.5)
+        plt.hlines(
+            y=0, xmin=-0.1, xmax=1.1, linestyles="--", color="black", linewidth=0.5
+        )
         plt.xlim(self.Nrange)
         # plt.ylim(-5, 20)
-        plt.xlabel(r'$\lambda$-coordinate')
-        plt.ylabel('Energy (kJ/mol)')
+        plt.xlabel(r"$\lambda$-coordinate")
+        plt.ylabel("Energy (kJ/mol)")
         plt.tight_layout()
         plt.savefig(f"{self.baseName}_added.png")
 
@@ -213,7 +237,7 @@ def protonation(xList: list, cutoff: float = 0.8) -> float:
         float: the average protonation.
     """
 
-    lambda_proto   = 0
+    lambda_proto = 0
     lambda_deproto = 0
 
     for x in xList:
@@ -244,7 +268,7 @@ def deprotonation(xList: list, cutoff: float = 0.8) -> float:
         float: the average deprotonation.
     """
 
-    lambda_proto   = 0
+    lambda_proto = 0
     lambda_deproto = 0
 
     for x in xList:
@@ -304,15 +328,19 @@ def getLambdaFileIndices(universe, resid: int, numChains: int = 5):
     # Lazy/deffered import.
     import MDAnalysis
 
-    segmentAatoms      = universe.select_atoms("chainID A")
-    titratableAtoms    = segmentAatoms.select_atoms('resname ASPT GLUT HSPT ARGT LYST TYRT')
+    segmentAatoms = universe.select_atoms("chainID A")
+    titratableAtoms = segmentAatoms.select_atoms(
+        "resname ASPT GLUT HSPT ARGT LYST TYRT"
+    )
     titratableResnames = list(titratableAtoms.residues.resnames)
-    titratableResids   = list(titratableAtoms.residues.resids)
-    targetidx          = titratableResids.index(resid)
+    titratableResids = list(titratableAtoms.residues.resids)
+    targetidx = titratableResids.index(resid)
 
-    numASPTGLUT        = len(segmentAatoms.select_atoms('resname ASPT GLUT ARGT LYST TYRT').residues)
-    numHSPT            = len(segmentAatoms.select_atoms('resname HSPT').residues)
-    factor             = numASPTGLUT + 3 * numHSPT
+    numASPTGLUT = len(
+        segmentAatoms.select_atoms("resname ASPT GLUT ARGT LYST TYRT").residues
+    )
+    numHSPT = len(segmentAatoms.select_atoms("resname HSPT").residues)
+    factor = numASPTGLUT + 3 * numHSPT
 
     count = 1
     for idx in range(0, len(titratableResnames)):
@@ -323,10 +351,10 @@ def getLambdaFileIndices(universe, resid: int, numChains: int = 5):
                 array.append(count + ii * factor)
             return array
 
-        if titratableResnames[idx] in ['ASPT', 'GLUT', 'ARGT', 'LYST', 'TYRT']:
+        if titratableResnames[idx] in ["ASPT", "GLUT", "ARGT", "LYST", "TYRT"]:
             count += 1
 
-        elif titratableResnames[idx] == 'HSPT':
+        elif titratableResnames[idx] == "HSPT":
             count += 3
 
 
@@ -342,7 +370,7 @@ def theoreticalProtonation(pH: float, pKa: float) -> float:
         float: protonation fraction.
     """
 
-    return 1 / (1 + 10**(pH - pKa))
+    return 1 / (1 + 10 ** (pH - pKa))
 
 
 def theoreticalMicropKa(pH: float, protonation: float) -> float:
@@ -372,9 +400,9 @@ def extractCharges(proto: str, depro: str) -> None:
     # Lazy/deferred import.
     from science.parsing import loadCol
 
-    atoms_p   = loadCol(proto, 5)
-    charge_p  = loadCol(proto, 7)
-    atoms_dp  = loadCol(depro, 5)
+    atoms_p = loadCol(proto, 5)
+    charge_p = loadCol(proto, 7)
+    atoms_dp = loadCol(depro, 5)
     charge_dp = loadCol(depro, 7)
 
     protoDict = {}
@@ -404,7 +432,7 @@ def extractCharges(proto: str, depro: str) -> None:
     print("qqB_1", B, sum(B))
 
 
-def plotdVdl(dvdl: list, name: list = ['curve'], Nrange: tuple = (-0.1, 1.1)) -> None:
+def plotdVdl(dvdl: list, name: list = ["curve"], Nrange: tuple = (-0.1, 1.1)) -> None:
     """Makes a (combined) plot of the specified dV/dl coefficients.
 
     Args:
@@ -416,7 +444,7 @@ def plotdVdl(dvdl: list, name: list = ['curve'], Nrange: tuple = (-0.1, 1.1)) ->
     # Lazy/deferred import.
     import matplotlib
 
-    matplotlib.rcParams.update({'font.size': 18})
+    matplotlib.rcParams.update({"font.size": 18})
     plt.figure(dpi=200)
 
     coords = np.arange(Nrange[0], Nrange[1], 0.01)
@@ -438,4 +466,4 @@ def plotdVdl(dvdl: list, name: list = ['curve'], Nrange: tuple = (-0.1, 1.1)) ->
     plt.xlabel(r"$\lambda$-coordinate")
     plt.ylabel("Energy (kJ/mol)")
     plt.tight_layout()
-    plt.savefig('dvdlplot.png')
+    plt.savefig("dvdlplot.png")

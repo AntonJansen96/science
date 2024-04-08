@@ -2,10 +2,11 @@ import os
 import sys
 from datetime import datetime
 
+
 class Sanitize:
     """Class for sanitizing user input of various types."""
 
-    def __init__(self, var, name: str = '', v: bool = True, exit: bool = True) -> None:
+    def __init__(self, var, name: str = "", v: bool = True, exit: bool = True) -> None:
         """Initialize Sanitize object.
 
         Args:
@@ -28,21 +29,21 @@ class Sanitize:
             msg (str): Information on the error.
         """
 
-        pre = 'SanitizeError: '  # Pre-string for error messages.
+        pre = "SanitizeError: "  # Pre-string for error messages.
 
         if self.__verbose:
 
             if self.__name:
                 if type(self.var) == str:
-                    print(f'{pre}[\'{self.var}\'] specified for [{self.__name}] {msg}.')
+                    print(f"{pre}['{self.var}'] specified for [{self.__name}] {msg}.")
                 else:
-                    print(f'{pre}[{self.var}] specified for [{self.__name}] {msg}.')
+                    print(f"{pre}[{self.var}] specified for [{self.__name}] {msg}.")
 
             else:
                 if type(self.var) == str:
-                    print(f'{pre}[\'{self.var}\'] {msg}.')
+                    print(f"{pre}['{self.var}'] {msg}.")
                 else:
-                    print(f'{pre}[{self.var}] {msg}.')
+                    print(f"{pre}[{self.var}] {msg}.")
 
         self.__good = False
 
@@ -75,24 +76,30 @@ class Sanitize:
 
         # First of all, if you use this function var should be an int, float, bool.
         if type(self.var) not in [int, float, bool]:
-            self.__error(f'not a number (should be in {[int, float, bool]})')
+            self.__error(f"not a number (should be in {[int, float, bool]})")
 
         else:
             # Second, if Type was user-specified in any way, check for match.
             if Type is not None and type(self.var) not in Type:
-                self.__error(f'should be of type {Type} (found {type(self.var)})')
+                self.__error(f"should be of type {Type} (found {type(self.var)})")
 
             # Check range.
             if len(Range) and (self.var < Range[0] or self.var > Range[1]):
-                self.__error(f'outside of acceptable interval {Range}')
+                self.__error(f"outside of acceptable interval {Range}")
 
             # Check signed versus unsigned.
             if signed and self.var < 0:
-                self.__error('cannot be negative')
+                self.__error("cannot be negative")
 
         return self.__endbehavior()
 
-    def string(self, Range: list = [int], upper: bool = False, lower: bool = False, ws: bool = True):
+    def string(
+        self,
+        Range: list = [int],
+        upper: bool = False,
+        lower: bool = False,
+        ws: bool = True,
+    ):
         """sanitize strings (str).
 
         Args:
@@ -106,24 +113,24 @@ class Sanitize:
         """
         # Confirm whether var is a string.
         if type(self.var) != str:
-            self.__error(f'should be of type {str}')
+            self.__error(f"should be of type {str}")
 
         # Check range.
         if len(Range) and (len(self.var) < Range[0] or len(self.var) > Range[1]):
-            self.__error(f'outside of acceptable length {Range}')
+            self.__error(f"outside of acceptable length {Range}")
 
         if upper and not self.var.isupper():
-            self.__error('should be all uppercase')
+            self.__error("should be all uppercase")
 
         if lower and not self.var.islower():
-            self.__error('should be all lowercase')
+            self.__error("should be all lowercase")
 
-        if (not ws) and (self.var.count(' ') > 0):
-            self.__error('cannot contain whitespace')
+        if (not ws) and (self.var.count(" ") > 0):
+            self.__error("cannot contain whitespace")
 
         return self.__endbehavior()
 
-    def path(self, ext: str = '', out: bool = False, abs: bool = False):
+    def path(self, ext: str = "", out: bool = False, abs: bool = False):
         """Sanitize file paths (str).
 
         Args:
@@ -136,24 +143,24 @@ class Sanitize:
         """
         # Only strings can represent file paths.
         if type(self.var) != str:
-            self.__error(f'should be of type {str}')
+            self.__error(f"should be of type {str}")
             return int(not self.__good)
 
         # File paths cannot be empty strings.
-        if self.var == '':
-            self.__error('cannot be empty')
+        if self.var == "":
+            self.__error("cannot be empty")
 
         # File paths cannot be directories.
         elif os.path.isdir(self.var):
-            self.__error('is a directory')
+            self.__error("is a directory")
 
         # (input) file path should correspond to an exisiting file.
         elif not os.path.exists(self.var) and not out:
-            self.__error('corresponding file does not exist')
+            self.__error("corresponding file does not exist")
 
         # (output) file DIRECTORY should already exist:
         if out and not os.path.isdir(os.path.split(os.path.abspath(self.var))[0]):
-            self.__error('directory for output does not exist')
+            self.__error("directory for output does not exist")
 
         # Check extension.
         if ext:
@@ -162,21 +169,21 @@ class Sanitize:
             if type(ext) != list:
                 ext = [ext]
 
-            if tail.count(' ') != 0:
-                self.__error('cannot contain whitespace')
+            if tail.count(" ") != 0:
+                self.__error("cannot contain whitespace")
 
-            if (tail.count('.') == 0) or (tail.count('.') > 1) or (tail[-1] == '.'):
-                self.__error(f'ambiguous extension (should be {ext})')
+            if (tail.count(".") == 0) or (tail.count(".") > 1) or (tail[-1] == "."):
+                self.__error(f"ambiguous extension (should be {ext})")
 
-            elif tail.index('.') == 0:
-                self.__error('cannot be just an extension')
+            elif tail.index(".") == 0:
+                self.__error("cannot be just an extension")
 
-            elif tail[tail.index('.'):] not in ext:
-                self.__error(f'should have extension {ext}')
+            elif tail[tail.index(".") :] not in ext:
+                self.__error(f"should have extension {ext}")
 
         # Check absolute file path.
         if abs and not os.path.isabs(self.var):
-            self.__error('should be an absolute file path')
+            self.__error("should be an absolute file path")
 
         return self.__endbehavior()
 
@@ -184,7 +191,13 @@ class Sanitize:
 class User:
     """Provides logging and formats user updates, warnings, and errors."""
 
-    def __init__(self, baseName: str = '', verbosity: int = 2, logFileName: str = '', maxLineLength: int = 90):
+    def __init__(
+        self,
+        baseName: str = "",
+        verbosity: int = 2,
+        logFileName: str = "",
+        maxLineLength: int = 90,
+    ):
         """Initialize User object.
 
         Args:
@@ -201,9 +214,9 @@ class User:
 
     def __log(self, message: str):
         if self.__logFileName:
-            with open(self.__logFileName, 'a+') as logfile:
+            with open(self.__logFileName, "a+") as logfile:
                 time = datetime.now().strftime("%Y/%m/%d|%H:%M:%S")
-                print(time + ' ' + message, file=logfile)
+                print(time + " " + message, file=logfile)
 
     def __output(self, message: str):
         """Handles output to terminal and (optionally) logging.
@@ -222,7 +235,7 @@ class User:
         self.__log(string)
         return string
 
-    def __base(self, message: str, preMessage: str = ''):
+    def __base(self, message: str, preMessage: str = ""):
         """Base method for handeling user messages.
 
         Args:
@@ -237,24 +250,24 @@ class User:
 
         firstLineWritten = False
         charCount = 0
-        currentLine = ''
+        currentLine = ""
 
-        for word in message.split(' '):
+        for word in message.split(" "):
 
             charCount += len(word) + 1
 
             if charCount < self.__maxLineLength:
-                currentLine += word + ' '
+                currentLine += word + " "
             else:
                 self.__output(f"{self.__baseName}{preMessage}{currentLine}")
                 firstLineWritten = True
                 charCount = len(word) + 1
-                currentLine = word + ' '
+                currentLine = word + " "
 
             # This we add so that not every subsequent line has preMessage,
             # but it is aligned nonetheless.
-            if firstLineWritten and preMessage != '':
-                preMessage = ' '.ljust(len(preMessage))
+            if firstLineWritten and preMessage != "":
+                preMessage = " ".ljust(len(preMessage))
 
         self.__output(f"{self.__baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
 
@@ -287,7 +300,7 @@ class User:
 
         if self.__verbosity > 0:
             self.__output(self.__baseName)
-            self.__base(message, preMessage='WARNING - ')
+            self.__base(message, preMessage="WARNING - ")
             self.__output(self.__baseName)
 
     def error(self, message: str):
@@ -299,7 +312,7 @@ class User:
 
         if self.__verbosity > 0:
             self.__output(self.__baseName)
-            self.__base(message, preMessage='ERROR - ')
+            self.__base(message, preMessage="ERROR - ")
             self.__output(self.__baseName)
 
         sys.exit(1)
@@ -329,10 +342,12 @@ class User:
 
             if val in valids:
                 self.__output(f"{self.__baseName}selected {val}")
-                self.__output('')
+                self.__output("")
                 return int(val)
 
-            self.__output(f"{self.__baseName}{val} is not a valid option, please try again:\n")
+            self.__output(
+                f"{self.__baseName}{val} is not a valid option, please try again:\n"
+            )
 
 
 def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
@@ -352,7 +367,7 @@ def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
     count = -1
     data = [[] for _ in range(len(col))]
     for stringLine in open(fname).read().splitlines():
-        if stringLine[0] in ['@', '#', '&']:
+        if stringLine[0] in ["@", "#", "&"]:
             continue
         # THIS IS FOR THE dt PART.
         count += 1
@@ -388,11 +403,13 @@ def loadCol(fname: str, col: int = 1, header=None):
     import pandas
 
     try:
-        df = pandas.read_table(fname, header=header, delim_whitespace=True, na_filter=False)
+        df = pandas.read_table(
+            fname, header=header, delim_whitespace=True, na_filter=False
+        )
 
     # Bug fix for when file / column is empty.
     except pandas.errors.EmptyDataError:
-        print(f'loadCol: warning, \'{fname}\' is empty.')
+        print(f"loadCol: warning, '{fname}' is empty.")
         return []
 
     return list(df.iloc[:, col - 1])
@@ -428,11 +445,11 @@ def pickleDump(var, file: str, protocol: int = 5) -> None:
         var (any): variable name.
         file (str): name of file to dump to.
     """
-    
+
     # Lazy/deferred import.
     from pickle import dump
-    
-    dump(var, open(file, 'wb'), protocol)
+
+    dump(var, open(file, "wb"), protocol)
 
 
 def pickleLoad(file: str):
@@ -444,8 +461,8 @@ def pickleLoad(file: str):
     Returns:
         any: variable that was loaded.
     """
-    
+
     # Lazy/deferred import.
     from pickle import load
-    
-    return load(open(file, 'rb'))
+
+    return load(open(file, "rb"))

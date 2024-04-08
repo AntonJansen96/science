@@ -1,25 +1,33 @@
-def genMissingAtomRep(fname: str, resRemark=465, atomRemark=470, chains=['A', 'B', 'C', 'D', 'E'], residues=['all']) -> None:
+def genMissingAtomRep(
+    fname: str,
+    resRemark=465,
+    atomRemark=470,
+    chains=["A", "B", "C", "D", "E"],
+    residues=["all"],
+) -> None:
     """Generates .vmd representation file for visualzing the missing atoms in a .pdb file."""
-    
+
     def list2str(array: list) -> str:
         xstr = ""
         for val in array:
             xstr += f"{val} "
         return xstr[:-1]
 
-    out = open(f"{fname[:-4]}_missing.vmd", 'w+')
+    out = open(f"{fname[:-4]}_missing.vmd", "w+")
     count = 1
 
     for line in open(fname).read().splitlines():
-        if f"REMARK {resRemark} " in line and 'SSSEQI' not in line:
+        if f"REMARK {resRemark} " in line and "SSSEQI" not in line:
             for chain in chains:
                 if f" {chain} " in line:
 
                     line = line.split()
-                    if not (line[2] in residues or residues[0] == 'all'):
+                    if not (line[2] in residues or residues[0] == "all"):
                         break
 
-                    out.write(f"atomselect macro l{count} \"chain {line[3]} and resid {int(line[4])}\"\n")
+                    out.write(
+                        f'atomselect macro l{count} "chain {line[3]} and resid {int(line[4])}"\n'
+                    )
                     count += 1
 
                     break
@@ -27,15 +35,17 @@ def genMissingAtomRep(fname: str, resRemark=465, atomRemark=470, chains=['A', 'B
         elif f"REMARK {atomRemark} " in line:
             for chain in chains:
                 if f" {chain} " in line:
-                    
+
                     line = line.split()
-                    if not (line[2] in residues or residues[0] == 'all'):
+                    if not (line[2] in residues or residues[0] == "all"):
                         break
 
-                    out.write(f"atomselect macro l{count} \"chain {line[3]} and resid {int(line[4])} and name ")
+                    out.write(
+                        f'atomselect macro l{count} "chain {line[3]} and resid {int(line[4])} and name '
+                    )
                     for idx in range(5, len(line)):
                         out.write(f"{line[idx]} ")
-                    out.write("\"\n")
+                    out.write('"\n')
                     count += 1
 
                     break
@@ -43,8 +53,8 @@ def genMissingAtomRep(fname: str, resRemark=465, atomRemark=470, chains=['A', 'B
     xstr = ""
     for x in range(1, count):
         xstr += f"l{x} or "
-    xstr = xstr[:len(xstr) - 4]
-    out.write(f"atomselect macro missing \"{xstr}\"\n")
+    xstr = xstr[: len(xstr) - 4]
+    out.write(f'atomselect macro missing "{xstr}"\n')
 
     rawstring = f"""
 mol modselect     0 0 chain {list2str(chains)}

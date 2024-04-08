@@ -1,9 +1,10 @@
 import time
 
+
 class Stopwatch:
     """Stopwatch class. Helpful for profiling."""
 
-    def __init__(self, description=''):
+    def __init__(self, description=""):
         """Initialize Stopwatch object. Count starts upon object initialization.
 
         Args:
@@ -14,16 +15,17 @@ class Stopwatch:
         self.starttime = time.time()
 
     def time(self):
-        """Print elapsed time (in seconds).
-        """
+        """Print elapsed time (in seconds)."""
         stoptime = time.time() - self.starttime
-        if self.description == '':
-            print('{:.3f}'.format(stoptime))
+        if self.description == "":
+            print("{:.3f}".format(stoptime))
         else:
-            print('{} took {:.3f} s'.format(self.description, stoptime))
+            print("{} took {:.3f} s".format(self.description, stoptime))
 
 
-def gromacs(command: str, stdin: list = [], terminal: bool = True, logFile: str = 'gromacs.log'):
+def gromacs(
+    command: str, stdin: list = [], terminal: bool = True, logFile: str = "gromacs.log"
+):
     """Python function for handeling calls to GROMACS.
 
     Args:
@@ -41,22 +43,28 @@ def gromacs(command: str, stdin: list = [], terminal: bool = True, logFile: str 
 
     # Use the << EOF method to handle user input. Prepare string.
     if stdin:
-        xstr = ' << EOF\n'
+        xstr = " << EOF\n"
         for val in stdin:
-            xstr += '{}\n'.format(val)
-        command += xstr + 'EOF'
+            xstr += "{}\n".format(val)
+        command += xstr + "EOF"
 
     if terminal:
-        process = run('gmx ' + command, shell=True)
+        process = run("gmx " + command, shell=True)
     else:
-        with open(logFile, 'a+') as file:
-            process = run('gmx ' + command, shell=True, stdout=file, stderr=file)
+        with open(logFile, "a+") as file:
+            process = run("gmx " + command, shell=True, stdout=file, stderr=file)
 
     if process.returncode != 0:
         if terminal:
-            print("Failed to run \"{}\" (exitcode {}).".format(command, process.returncode))
+            print(
+                'Failed to run "{}" (exitcode {}).'.format(command, process.returncode)
+            )
         else:
-            print("Failed to run \"{}\" (exitcode {}). Check your logfile ({})".format(command, process.returncode, logFile))
+            print(
+                'Failed to run "{}" (exitcode {}). Check your logfile ({})'.format(
+                    command, process.returncode, logFile
+                )
+            )
 
     return process.returncode
 
@@ -79,9 +87,13 @@ def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
 
     u = Universe(inputFile)
 
-    with open(outputFile, 'w') as file:
+    with open(outputFile, "w") as file:
 
-        print('Creating index file \'{}\' containing {} index groups:'.format(outputFile, len(groups)))
+        print(
+            "Creating index file '{}' containing {} index groups:".format(
+                outputFile, len(groups)
+            )
+        )
 
         groupidx = 0
 
@@ -90,24 +102,26 @@ def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
             lineCount = 0
 
             # Write header. We replace any white space with underscores.
-            header = group.replace(' ', '_')
-            file.write('[ {} ]\n'.format(header))
+            header = group.replace(" ", "_")
+            file.write("[ {} ]\n".format(header))
 
             indices = list(u.select_atoms(group).atoms.indices)
 
             for idx in indices:
                 # It's idx + 1 because we want atom numbers, not indices.
-                file.write('{:<7d}'.format(idx + 1))
+                file.write("{:<7d}".format(idx + 1))
 
                 # This is to prevent having too many atom numbers on one line.
                 lineCount += 1
                 if lineCount == 13:
-                    file.write('\n')
+                    file.write("\n")
                     lineCount = 0
 
-            file.write('\n\n')
+            file.write("\n\n")
 
-            print('group {} \'{}\' contains {} atoms'.format(groupidx, header, len(indices)))
+            print(
+                "group {} '{}' contains {} atoms".format(groupidx, header, len(indices))
+            )
             groupidx += 1
 
     return outputFile
@@ -154,11 +168,33 @@ def triplet2letter(triplet: str):
         char: single letter.
     """
 
-    dict = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
-            'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
-            'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-            'ALA': 'A', 'VAL': 'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M',
-            'ASPT': 'D', 'GLUT': 'E', 'HSPT': 'H', 'NA': 'Na+', 'CL': 'Cl-'}
+    dict = {
+        "CYS": "C",
+        "ASP": "D",
+        "SER": "S",
+        "GLN": "Q",
+        "LYS": "K",
+        "ILE": "I",
+        "PRO": "P",
+        "THR": "T",
+        "PHE": "F",
+        "ASN": "N",
+        "GLY": "G",
+        "HIS": "H",
+        "LEU": "L",
+        "ARG": "R",
+        "TRP": "W",
+        "ALA": "A",
+        "VAL": "V",
+        "GLU": "E",
+        "TYR": "Y",
+        "MET": "M",
+        "ASPT": "D",
+        "GLUT": "E",
+        "HSPT": "H",
+        "NA": "Na+",
+        "CL": "Cl-",
+    }
 
     return dict[triplet]
 
@@ -209,7 +245,11 @@ def makeSuperDict(keyLists: list):
     size = 1
     for idx in range(0, len(keyLists) - 1):
         size *= len(keyLists[idx])
-    print('Created superDict of size {} (recursion depth {}).'.format(size, len(keyLists) - 1))
+    print(
+        "Created superDict of size {} (recursion depth {}).".format(
+            size, len(keyLists) - 1
+        )
+    )
 
     # EXPLANATION THROUGH THE FOLLOWING EXAMPLE:
 
@@ -268,24 +308,24 @@ def genRestraints(pdb: str, fname: str, atomSelection: str):
     u = MDAnalysis.Universe(pdb)
     sel = u.select_atoms(atomSelection).atoms.indices
 
-    with open(fname, 'w+') as file:
+    with open(fname, "w+") as file:
         # Write header
-        file.write('; Position restraints for {}\n'.format(pdb))
-        file.write('; Selection is \'{}\'\n\n'.format(atomSelection))
-        file.write('[ position_restraints ]\n')
-        file.write(';  i funct       fcx        fcy        fcz\n')
+        file.write("; Position restraints for {}\n".format(pdb))
+        file.write("; Selection is '{}'\n\n".format(atomSelection))
+        file.write("[ position_restraints ]\n")
+        file.write(";  i funct       fcx        fcy        fcz\n")
 
         # Write position restraints
         for idx in list(sel):
-            file.write('{}  1  1000  1000  1000\n'.format(idx + 1))
+            file.write("{}  1  1000  1000  1000\n".format(idx + 1))
 
     # User update and reminder
-    print('Generated position restraints file \'{}\''.format(fname))
-    print('Don\'t forget to add the following to (the bottom of) your topology:\n')
-    print('#ifdef POSRES_NAME\n#include \"{}\"'.format(fname))
-    print('#endif\n')
-    print('And the following to your .mdp file:\n')
-    print('define = -DPOSRES_NAME\n')
+    print("Generated position restraints file '{}'".format(fname))
+    print("Don't forget to add the following to (the bottom of) your topology:\n")
+    print('#ifdef POSRES_NAME\n#include "{}"'.format(fname))
+    print("#endif\n")
+    print("And the following to your .mdp file:\n")
+    print("define = -DPOSRES_NAME\n")
 
 
 def backup(name: str, verbose: bool = True):
@@ -297,16 +337,16 @@ def backup(name: str, verbose: bool = True):
     """
 
     # Lazy/deferring import
-    import os 
+    import os
 
     count = 1
     while os.path.isfile(name):
-        if os.path.isfile(f'#{name}.{count}#'):
+        if os.path.isfile(f"#{name}.{count}#"):
             count += 1
         else:
-            os.system(f'mv {name} \#{name}.{count}\#')  # noqa
+            os.system(f"mv {name} \#{name}.{count}\#")  # noqa
             if verbose:
-                print(f'Backed up {name} to #{name}.{count}#')
+                print(f"Backed up {name} to #{name}.{count}#")
             return
 
 
@@ -322,7 +362,7 @@ def LJPotential(r: float, e_ij: float, s_ij: float) -> float:
         float: interaction energy (kJ/mol).
     """
 
-    return 4 * e_ij * ( (s_ij / r)**12 - (s_ij / r)**6 )
+    return 4 * e_ij * ((s_ij / r) ** 12 - (s_ij / r) ** 6)
 
 
 def CoulombPotential(r: float, qi: float, qj: float) -> float:
