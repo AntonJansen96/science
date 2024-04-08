@@ -1,9 +1,6 @@
-import sys
 import os
-import pandas
-import pickle
+import sys
 from datetime import datetime
-
 
 class Sanitize:
     """Class for sanitizing user input of various types."""
@@ -386,6 +383,10 @@ def loadCol(fname: str, col: int = 1, header=None):
     Returns:
         list: The column loaded into a list.
     """
+
+    # Lazy/deferred import.
+    import pandas
+
     try:
         df = pandas.read_table(fname, header=header, delim_whitespace=True, na_filter=False)
 
@@ -427,8 +428,11 @@ def pickleDump(var, file: str, protocol: int = 5) -> None:
         var (any): variable name.
         file (str): name of file to dump to.
     """
-
-    pickle.dump(var, open(file, 'wb'), protocol)
+    
+    # Lazy/deferred import.
+    from pickle import dump
+    
+    dump(var, open(file, 'wb'), protocol)
 
 
 def pickleLoad(file: str):
@@ -440,5 +444,8 @@ def pickleLoad(file: str):
     Returns:
         any: variable that was loaded.
     """
-
-    return pickle.load(open(file, 'rb'))
+    
+    # Lazy/deferred import.
+    from pickle import load
+    
+    return load(open(file, 'rb'))

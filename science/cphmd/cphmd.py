@@ -1,9 +1,6 @@
-import matplotlib
-import matplotlib.pyplot as plt
-import MDAnalysis
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.special import erf, erfinv
-from science.parsing import loadCol
 
 
 class GenPotentials:
@@ -86,6 +83,9 @@ class InverseBoltzmann:
     potential to a replicas histogram or for adjusting dwpE."""
 
     def __init__(self, baseName: str, coordsArray: list, Nbins: int = 35, Nrange=(-0.10, 1.10)) -> None:
+
+        # Lazy/deferred import.
+        import matplotlib
 
         matplotlib.rcParams.update({'font.size': 24})
 
@@ -289,7 +289,7 @@ def movingDeprotonation(xList: list, cutoff: float = 0.8):
     return Av
 
 
-def getLambdaFileIndices(universe: MDAnalysis.Universe, resid: int, numChains: int = 5):
+def getLambdaFileIndices(universe, resid: int, numChains: int = 5):
     """Returns an array containing the lambda-file indices for the specified resid.
     Takes into account ASPT, GLUT, HSPT, ARGT, LYST, TYRT.
 
@@ -300,6 +300,9 @@ def getLambdaFileIndices(universe: MDAnalysis.Universe, resid: int, numChains: i
     Returns:
        list: corresponding cphmd-coord numbers.
     """
+
+    # Lazy/deffered import.
+    import MDAnalysis
 
     segmentAatoms      = universe.select_atoms("chainID A")
     titratableAtoms    = segmentAatoms.select_atoms('resname ASPT GLUT HSPT ARGT LYST TYRT')
@@ -366,6 +369,9 @@ def extractCharges(proto: str, depro: str) -> None:
         depro (str): .itp file name of deprotonated structure.
     """
 
+    # Lazy/deferred import.
+    from science.parsing import loadCol
+
     atoms_p   = loadCol(proto, 5)
     charge_p  = loadCol(proto, 7)
     atoms_dp  = loadCol(depro, 5)
@@ -406,6 +412,9 @@ def plotdVdl(dvdl: list, name: list = ['curve'], Nrange: tuple = (-0.1, 1.1)) ->
         name (list): list of names belonging to the sets of dV/dl coefficients.
         Nrange (tuple): desired lambda coordinate range.
     """
+
+    # Lazy/deferred import.
+    import matplotlib
 
     matplotlib.rcParams.update({'font.size': 18})
     plt.figure(dpi=200)

@@ -1,10 +1,4 @@
 import time
-import os
-import subprocess
-import MDAnalysis
-import scipy.stats as stats
-import copy
-
 
 class Stopwatch:
     """Stopwatch class. Helpful for profiling."""
@@ -42,6 +36,9 @@ def gromacs(command: str, stdin: list = [], terminal: bool = True, logFile: str 
         int: return code (0 if things were successful).
     """
 
+    # Lazy/deferring import
+    from subprocess import run
+
     # Use the << EOF method to handle user input. Prepare string.
     if stdin:
         xstr = ' << EOF\n'
@@ -50,10 +47,10 @@ def gromacs(command: str, stdin: list = [], terminal: bool = True, logFile: str 
         command += xstr + 'EOF'
 
     if terminal:
-        process = subprocess.run('gmx ' + command, shell=True)
+        process = run('gmx ' + command, shell=True)
     else:
         with open(logFile, 'a+') as file:
-            process = subprocess.run('gmx ' + command, shell=True, stdout=file, stderr=file)
+            process = run('gmx ' + command, shell=True, stdout=file, stderr=file)
 
     if process.returncode != 0:
         if terminal:
@@ -77,7 +74,10 @@ def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
         str: outputFile.
     """
 
-    u = MDAnalysis.Universe(inputFile)
+    # Lazy/deferring import
+    from MDAnalysis import Universe
+
+    u = Universe(inputFile)
 
     with open(outputFile, 'w') as file:
 
@@ -176,7 +176,9 @@ def ttestPass(sample1: list, sample2: list, alpha: float = 0.05):
         bool: Whether or not the two sample means differ signifcantly.
     """
 
-    pvalue = stats.ttest_ind(sample1, sample2, equal_var=False)[1]
+    from scipy.stats import ttest_ind
+
+    pvalue = ttest_ind(sample1, sample2, equal_var=False)[1]
 
     return bool(pvalue < alpha)
 
@@ -196,6 +198,9 @@ def makeSuperDict(keyLists: list):
         dict: desired nested dictionary or 'superDict' structure.
     """
 
+    # Lazy/deferring import
+    from copy import deepcopy
+
     # Assertions
     assert isinstance(keyLists[0], list)
     assert len(keyLists) > 1
@@ -211,38 +216,38 @@ def makeSuperDict(keyLists: list):
     # A = []
     # B = {}
     # for key in metrics:
-    #     B[key] = copy.deepcopy(A)
+    #     B[key] = deepcopy(A)
     # C = {}
     # for key in chains:
-    #     C[key] = copy.deepcopy(B)
+    #     C[key] = deepcopy(B)
     # D = {}
     # for key in reps:
-    #     D[key] = copy.deepcopy(C)
+    #     D[key] = deepcopy(C)
     # E = {}
     # for key in sims:
-    #     E[key] = copy.deepcopy(D)
+    #     E[key] = deepcopy(D)
 
     # List  = [sims, reps, chains, metrics, []]
     # array = [{}, {}, {}, {}, List[4]]
 
     # for key in List[3]:
-    #     array[3][key] = copy.deepcopy(array[4])
+    #     array[3][key] = deepcopy(array[4])
 
     # for key in List[2]:
-    #     array[2][key] = copy.deepcopy(array[3])
+    #     array[2][key] = deepcopy(array[3])
 
     # for key in List[1]:
-    #     array[1][key] = copy.deepcopy(array[2])
+    #     array[1][key] = deepcopy(array[2])
 
     # for key in List[0]:
-    #     array[0][key] = copy.deepcopy(array[1])
+    #     array[0][key] = deepcopy(array[1])
 
-    array = [copy.deepcopy({}) for _ in range(0, len(keyLists) - 1)]
-    array += [copy.deepcopy(keyLists[-1])]
+    array = [deepcopy({}) for _ in range(0, len(keyLists) - 1)]
+    array += [deepcopy(keyLists[-1])]
 
     for idx in range(1, len(keyLists))[::-1]:
         for key in keyLists[idx - 1]:
-            array[idx - 1][key] = copy.deepcopy(array[idx])
+            array[idx - 1][key] = deepcopy(array[idx])
 
     return array[0]
 
@@ -256,6 +261,9 @@ def genRestraints(pdb: str, fname: str, atomSelection: str):
         fname (str): output file (.itp) name.
         atomSelection (str): MDAnalysis style selection string.
     """
+
+    # Lazy/deferring import
+    import MDAnalysis
 
     u = MDAnalysis.Universe(pdb)
     sel = u.select_atoms(atomSelection).atoms.indices
@@ -287,6 +295,10 @@ def backup(name: str, verbose: bool = True):
         name (str): (base) file name to backup.
         verbose (bool, optional): provide a user update. Defaults to True.
     """
+
+    # Lazy/deferring import
+    import os 
+
     count = 1
     while os.path.isfile(name):
         if os.path.isfile(f'#{name}.{count}#'):
