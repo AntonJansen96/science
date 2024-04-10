@@ -58,7 +58,7 @@ class Sanitize:
         else:
             return self.var
 
-    def num(self, Type=None, Range: list = [int], signed: bool = False):
+    def num(self, Type=None, Range: list = [], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
 
         Args:
