@@ -24,10 +24,7 @@ def parsecmdline() -> argparse.Namespace:
 
     # The input file name is a positional argument.
     parser.add_argument(
-        "file",
-        nargs="*",
-        default="__nothingspecified__",
-        help="Input data file."
+        "file", nargs="*", default="__nothingspecified__", help="Input data file."
     )
 
     parser.add_argument(
@@ -99,7 +96,7 @@ def parsecmdline() -> argparse.Namespace:
         action="store",
         help=f"Set line width. Defaults to {default_linewidth}.",
         type=float,
-        default=default_linewidth
+        default=default_linewidth,
     )
 
     # Required for auto-completing using argcomplete.
@@ -268,9 +265,11 @@ class QuickPlot:
                 break
 
         import numpy as np  # Lazy import.
+
         data = np.loadtxt(fname, comments=["@", "#"], unpack=True)
 
         return data[np.array(col)], xlabel, ylabel, legendList
+
 
 if __name__ == "__main__":
     # Run the QuickPlot class with the parsed command line arguments.
