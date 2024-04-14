@@ -26,8 +26,8 @@ def parsecmdline() -> argparse.Namespace:
     parser.add_argument(
         "file",
         nargs="*",
-        default="nothingspecified",
-        help="Input data file.",
+        default="__nothingspecified__",
+        help="Input data file."
     )
 
     parser.add_argument(
@@ -92,6 +92,16 @@ def parsecmdline() -> argparse.Namespace:
         help="Set axis limits. Format: xmin,xmax,ymin,ymax.",
     )
 
+    parser.add_argument(
+        "-lw",
+        required=False,
+        dest="linewidth",
+        action="store",
+        help=f"Set line width. Defaults to {default_linewidth}.",
+        type=float,
+        default=default_linewidth
+    )
+
     # Required for auto-completing using argcomplete.
     argcomplete.autocomplete(parser)
 
@@ -99,7 +109,7 @@ def parsecmdline() -> argparse.Namespace:
     CLI = parser.parse_args()
 
     # If no input file is specified, raise an error.
-    if CLI.file == "nothingspecified":
+    if CLI.file == "__nothingspecified__":
         parser.error("No input file specified.")
 
     # Make the output file a .png if no extension is provided.
@@ -133,12 +143,7 @@ class QuickPlot:
             else:
                 print("Invalid input format")
 
-        # updateStr = "quickplot: plotting "
-        # for key in self.inputData:
-        #     updateStr += f"{key} col {self.inputData[key]}, "
-        # print(updateStr[:-2])
-
-        # Set nolegend to True if the flag is set.
+        # Set nolegend to True if the -nl flag is set.
         self.nolegend: bool = CLI.nolegend != None
 
         # Set save to False if the flag is not set, otherwise sanitize the path.
@@ -179,6 +184,9 @@ class QuickPlot:
         # Set fontsize and check if it is within the range [1, 100].
         self.fontsize = Sanitize(CLI.fontsize, "fontsize").num(signed=True)
 
+        # Set linewidth and check if it is within the range [0.1, 10].
+        self.linewidth = Sanitize(CLI.linewidth, "linewidth").num(Range=[0.1, 10])
+
     def run(self) -> None:
         """Run the QuickPlot class to plot the data using matplotlib."""
 
@@ -190,8 +198,9 @@ class QuickPlot:
         # Set font size.
         plt.rcParams.update({"font.size": self.fontsize})
 
+        # Plotting loop.
         for key in self.inputData:
-            data, xlabel, ylabel, legendList = self.loadxvgComplete(
+            data, xlabel, ylabel, legendList = self.loadxvg(
                 fname=key, col=self.inputData[key]
             )
 
@@ -199,7 +208,7 @@ class QuickPlot:
             t = data[0]
             for idx in range(1, len(data)):
                 plt.plot(
-                    t, data[idx], label=legendList[idx - 1], linewidth=default_linewidth
+                    t, data[idx], label=legendList[idx - 1], linewidth=self.linewidth
                 )
 
         # Set labels.
@@ -234,7 +243,7 @@ class QuickPlot:
         else:  # Show the plot if the save flag is not set.
             plt.show()
 
-    def loadxvgComplete(self, fname: str, col: list):
+    def loadxvg(self, fname: str, col: list):
         """Load data from an xvg file and return the data, xlabel, ylabel, and legendList.
 
         Args:
@@ -244,8 +253,6 @@ class QuickPlot:
         Returns:
             tuple: data, xlabel, ylabel, legendList.
         """
-
-        data = self.loadxvg(fname=fname, col=col)
 
         # Load the x-axis and y-axis labels and the legend list.
         legendList = []
@@ -260,42 +267,10 @@ class QuickPlot:
             elif line[0] not in ["#", "@"]:
                 break
 
-        return data, xlabel, ylabel, legendList
+        import numpy as np  # Lazy import.
+        data = np.loadtxt(fname, comments=["@", "#"], unpack=True)
 
-
-    def loadxvg(self, fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
-        """Loads an .xvg file into a list of lists.
-        May also be used to load float columns from files in general.
-
-        Args:
-            fname (str): file name.
-            col (list, optional): columns to load. Defaults to [0, 1].
-            dt (int, optional): step size. Defaults to 1.
-            b (int, optional): starting point. Defaults to 0.
-
-        Returns:
-            list of lists : contains the columns that were loaded.
-        """
-
-        count = -1
-        data = [[] for _ in range(len(col))]
-        for stringLine in open(fname).read().splitlines():
-            if stringLine[0] in ["@", "#", "&"]:
-                continue
-            # THIS IS FOR THE dt PART.
-            count += 1
-            if count % dt != 0:
-                continue
-
-            listLine = stringLine.split()
-            # AND THIS IS FOR THE b PART.
-            if b != 0 and float(listLine[col[0]]) < b:
-                continue
-
-            for idx in col:
-                data[idx].append(float(listLine[col[idx]]))
-
-        return data
+        return data[np.array(col)], xlabel, ylabel, legendList
 
 if __name__ == "__main__":
     # Run the QuickPlot class with the parsed command line arguments.
