@@ -197,9 +197,16 @@ class QuickPlot:
 
         # Plotting loop.
         for key in self.inputData:
-            data, xlabel, ylabel, legendList = self.loadxvg(
-                fname=key, col=self.inputData[key]
-            )
+
+            if key.split(".")[-1] == ".xvg":
+                data, xlabel, ylabel, legendList = self.loadxvg(
+                    fname=key, col=self.inputData[key]
+                )
+
+            else:
+                data, xlabel, ylabel, legendList = self.loadmisc(
+                    fname=key, col=self.inputData[key]
+                )
 
             # Plot the data.
             t = data[0]
@@ -266,9 +273,26 @@ class QuickPlot:
 
         import numpy as np  # Lazy import.
 
-        data = np.loadtxt(fname, comments=["@", "#"], unpack=True)
+        data = np.loadtxt(fname, comments=["@", "#"], unpack=True, usecols=col)
 
-        return data[np.array(col)], xlabel, ylabel, legendList
+        return data, xlabel, ylabel, legendList
+
+    def loadmisc(self, fname: str, col: list):
+        """Load data from a miscellaneous file and return the data, xlabel, ylabel, and legendList.
+
+        Args:
+            fname (str): file name.
+            col (list): list of columns to load.
+
+        Returns:
+            tuple: data, xlabel, ylabel, legendList.
+        """
+
+        import numpy as np  # Lazy import.
+
+        data = np.loadtxt(fname, comments=["@", "#", "%"], unpack=True, usecols=col)
+
+        return data, "", "", [f"column {x + 1}" for x in col]
 
 
 if __name__ == "__main__":
