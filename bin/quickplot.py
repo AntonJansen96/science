@@ -5,8 +5,10 @@ import argparse
 import argcomplete
 
 # Set default parameters.
+default_cropmarin = 10
 default_dpi = 150
 default_fontsize = 12
+default_linewidth = 0.5
 default_output = "out.png"
 
 
@@ -87,7 +89,7 @@ def parsecmdline() -> argparse.Namespace:
         required=False,
         dest="axis",
         action="store",
-        help="Set axis limits. Format: 'xmin,xmax,ymin,ymax'.",
+        help="Set axis limits. Format: xmin,xmax,ymin,ymax.",
     )
 
     # Required for auto-completing using argcomplete.
@@ -182,7 +184,9 @@ class QuickPlot:
         # Plot the data.
         t = data[0]
         for idx in range(1, len(data)):
-            plt.plot(t, data[idx], label=legendList[idx - 1])
+            plt.plot(
+                t, data[idx], label=legendList[idx - 1], linewidth=default_linewidth
+            )
 
         # Set labels.
         plt.xlabel(xlabel)
@@ -210,7 +214,7 @@ class QuickPlot:
 
             plt.savefig(self.save)
             os.system(
-                f"convert {self.save} -trim -bordercolor white -border 10x10 {self.save}"
+                f"convert {self.save} -trim -bordercolor white -border {default_cropmarin}x{default_cropmarin} {self.save}"
             )
             os.system(f"code {self.save}")
         else:  # Show the plot if the save flag is not set.
@@ -236,11 +240,11 @@ class QuickPlot:
         for line in open(fname):
             if line[0] == "@":
                 if "xaxis" in line:
-                    xlabel = line[19:-1]
+                    xlabel = line[19:-2]
                 elif "yaxis" in line:
-                    ylabel = line[19:-1]
+                    ylabel = line[19:-2]
                 elif 'legend "' in line:
-                    legendList.append(line[13:-1])
+                    legendList.append(line[13:-2])
             elif line[0] not in ["#", "@"]:
                 break
 
