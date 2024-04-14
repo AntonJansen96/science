@@ -25,7 +25,7 @@ def parsecmdline() -> argparse.Namespace:
     # The input file name is a positional argument.
     parser.add_argument(
         "file",
-        nargs="?",
+        nargs="*",
         default="nothingspecified",
         help="Input data file.",
     )
@@ -121,8 +121,22 @@ class QuickPlot:
 
         from science.parsing import Sanitize  # Lazy import.
 
-        # Input file name.
-        self.file: str = Sanitize(CLI.file, "input").path()
+        # Parse the input string and perform sanitization.
+        self.inputData = {}
+        for path in CLI.file:
+            if path.count(":") == 0 or path[-1] == ":":
+                self.inputData[Sanitize(path).path()] = [0, 1]
+            elif path.count(":") == 1:
+                head = Sanitize(path.split(":")[0]).path()
+                tail = path.split(":")[1]
+                self.inputData[head] = [int(num) for num in tail.split(",")]
+            else:
+                print("Invalid input format")
+
+        # updateStr = "quickplot: plotting "
+        # for key in self.inputData:
+        #     updateStr += f"{key} col {self.inputData[key]}, "
+        # print(updateStr[:-2])
 
         # Set nolegend to True if the flag is set.
         self.nolegend: bool = CLI.nolegend != None
@@ -176,17 +190,17 @@ class QuickPlot:
         # Set font size.
         plt.rcParams.update({"font.size": self.fontsize})
 
-        # Load data from xvg file.
-        data, xlabel, ylabel, legendList = self.loadxvgComplete(
-            fname=self.file, col=[0, 1]
-        )
-
-        # Plot the data.
-        t = data[0]
-        for idx in range(1, len(data)):
-            plt.plot(
-                t, data[idx], label=legendList[idx - 1], linewidth=default_linewidth
+        for key in self.inputData:
+            data, xlabel, ylabel, legendList = self.loadxvgComplete(
+                fname=key, col=self.inputData[key]
             )
+
+            # Plot the data.
+            t = data[0]
+            for idx in range(1, len(data)):
+                plt.plot(
+                    t, data[idx], label=legendList[idx - 1], linewidth=default_linewidth
+                )
 
         # Set labels.
         plt.xlabel(xlabel)
@@ -231,9 +245,7 @@ class QuickPlot:
             tuple: data, xlabel, ylabel, legendList.
         """
 
-        from science.parsing import loadxvg  # Lazy import.
-
-        data = loadxvg(fname=fname, col=col)
+        data = self.loadxvg(fname=fname, col=col)
 
         # Load the x-axis and y-axis labels and the legend list.
         legendList = []
@@ -250,6 +262,40 @@ class QuickPlot:
 
         return data, xlabel, ylabel, legendList
 
+
+    def loadxvg(self, fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
+        """Loads an .xvg file into a list of lists.
+        May also be used to load float columns from files in general.
+
+        Args:
+            fname (str): file name.
+            col (list, optional): columns to load. Defaults to [0, 1].
+            dt (int, optional): step size. Defaults to 1.
+            b (int, optional): starting point. Defaults to 0.
+
+        Returns:
+            list of lists : contains the columns that were loaded.
+        """
+
+        count = -1
+        data = [[] for _ in range(len(col))]
+        for stringLine in open(fname).read().splitlines():
+            if stringLine[0] in ["@", "#", "&"]:
+                continue
+            # THIS IS FOR THE dt PART.
+            count += 1
+            if count % dt != 0:
+                continue
+
+            listLine = stringLine.split()
+            # AND THIS IS FOR THE b PART.
+            if b != 0 and float(listLine[col[0]]) < b:
+                continue
+
+            for idx in col:
+                data[idx].append(float(listLine[col[idx]]))
+
+        return data
 
 if __name__ == "__main__":
     # Run the QuickPlot class with the parsed command line arguments.
