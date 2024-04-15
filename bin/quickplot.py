@@ -198,7 +198,7 @@ class QuickPlot:
         # Plotting loop.
         for key in self.inputData:
 
-            if key.split(".")[-1] == ".xvg":
+            if key.split(".")[-1] == "xvg":
                 data, xlabel, ylabel, legendList = self.loadxvg(
                     fname=key, col=self.inputData[key]
                 )
