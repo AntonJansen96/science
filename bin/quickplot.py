@@ -273,7 +273,11 @@ class QuickPlot:
 
         import numpy as np  # Lazy import.
 
-        data = np.loadtxt(fname, comments=["@", "#"], unpack=True, usecols=col)
+        try:
+            data = np.loadtxt(fname, comments=["@", "#"], unpack=True, usecols=col)
+        except ValueError:
+            print("Problem with the input file or specified column numbers. Exiting...")
+            exit(1)
 
         return data, xlabel, ylabel, legendList
 
@@ -290,7 +294,11 @@ class QuickPlot:
 
         import numpy as np  # Lazy import.
 
-        data = np.loadtxt(fname, comments=["@", "#", "%"], unpack=True, usecols=col)
+        try:
+            data = np.loadtxt(fname, comments=["@", "#", "%"], unpack=True, usecols=col)
+        except ValueError:
+            print("Problem with the input file or specified column numbers. Exiting...")
+            exit(1)
 
         return data, "", "", [f"column {x + 1}" for x in col]
 
