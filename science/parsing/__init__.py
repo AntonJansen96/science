@@ -1,4 +1,4 @@
-"""Contains function for parsing data and structure (pdb, gro) files."""
+"""Contains functions for parsing data and structure (pdb, gro) files."""
 
 __all__ = [
     "Sanitize",
