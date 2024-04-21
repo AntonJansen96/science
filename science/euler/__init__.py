@@ -19,6 +19,10 @@ __all__ = [
     "genPanDigital",
     "genPrimTriples",
     "genAllTriples",
+    "num2vec",
+    "radix",
+    "dec2roman",
+    "roman2dec",
     "gcd",
 ]
 
@@ -42,4 +46,8 @@ from .euler import fibonacci
 from .euler import genPanDigital
 from .euler import genPrimTriples
 from .euler import genAllTriples
+from .euler import num2vec
+from .euler import radix
+from .euler import dec2roman
+from .euler import roman2dec
 from .euler import gcd

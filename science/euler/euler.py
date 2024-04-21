@@ -383,6 +383,100 @@ def genAllTriples(perimLim: int):
     return A, B, C
 
 
+# CONVERSIONS ##################################################################
+
+
+def num2vec(num: int) -> list:
+    """Converts a number to a vector of digits.
+
+    Args:
+        num (int): number.
+
+    Returns:
+        list: vector of digits.
+    """
+
+    numbers = []
+
+    while num:
+        numbers.append(num % 10)
+        num //= 10
+
+    return numbers[::-1]
+
+
+def radix(value: int, radix: int) -> int:
+    """Converts a number to a different radix.
+
+    Args:
+        value (int): number.
+        radix (int): radix.
+
+    Returns:
+        int: number in different radix.
+    """
+
+    result = 0
+    power = 1
+
+    while value:
+        result += power * (value % radix)
+        value //= radix
+        power *= 10
+
+    return result
+
+
+def dec2roman(dec: int) -> str:
+    """Converts a decimal number to a Roman numeral.
+
+    Args:
+        dec (int): number.
+
+    Returns:
+        str: Roman numeral.
+    """
+
+    M = ["", "M", "MM", "MMM", "MMMM"]
+    H = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
+    T = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
+    O = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+
+    a = int(dec / 1000)
+    b = int(dec % 1000 / 100)
+    c = int(dec % 100 / 10)
+    d = int(dec % 10)
+
+    return M[a] + H[b] + T[c] + O[d]
+
+
+def roman2dec(roman: str) -> int:
+    """Converts a Roman numeral to a decimal number.
+
+    Args:
+        roman (str): Roman numeral.
+
+    Returns:
+        int: number.
+    """
+
+    chars = {"M": 1000, "D": 500, "C": 100, "L": 50, "X": 10, "V": 5, "I": 1}
+
+    decimal = 0
+
+    for ii in range(len(roman) - 1):
+
+        if chars[roman[ii]] >= chars[roman[ii + 1]]:
+            decimal += chars[roman[ii]]
+
+        else:
+            decimal -= chars[roman[ii]]
+
+    decimal += chars[roman[-1]]
+
+    return decimal
+
+
 # MISCELLANEOUS FUNCTIONS ######################################################
 
 
