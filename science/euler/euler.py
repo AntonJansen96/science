@@ -259,6 +259,130 @@ def isPermutation(a: int, b: int) -> bool:
     return __fingerprint(a) == __fingerprint(b)
 
 
+# PARTITIONING #################################################################
+
+
+def partition(money: int, coins: list = []) -> int:
+    """Returns the number of ways money can be divided (optionally: by coins provided in the coins array).
+
+    Args:
+        money (int): starting number.
+        coins (list, optional): coins provided in a coin vector. Defaults to [1, 2, ..., money + 1].
+
+    Returns:
+        int: number of ways.
+    """
+
+    if not coins:
+        coins = range(1, money + 1)
+
+    ways = [0] * (money + 1)
+    ways[0] = 1
+
+    for ii in range(0, len(coins)):
+        for jj in range(coins[ii], money + 1):
+            ways[jj] += ways[jj - coins[ii]]
+
+    return ways[money]
+
+
+# GENERATORS ###################################################################
+
+
+def fibonacci():
+    """Generator for Fibonacci numbers.
+
+    Yields:
+        int: Fibonacci number.
+    """
+
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+
+def genPanDigital(a: int, b: int) -> list:
+    """Generates all numbers that are a to b pandigital.
+
+    Args:
+        a (int): start.
+        b (int): end.
+
+    Returns:
+        list: pandigital numbers.
+    """
+
+    pass  # TODO: Implement once we have our permutations class.
+
+
+def genPrimTriples(perimLim: int):
+    """Generates primitive Pythagorean triples with perimeter (a + b + c) < perimLim.
+
+    Args:
+        perimLim (int): perimeter limit.
+
+    Returns:
+        three lists A, B, C.
+    """
+
+    from math import isqrt
+
+    A = []
+    B = []
+    C = []
+
+    for m in range(1, isqrt(perimLim) + 1):
+        for n in range(m + 1, isqrt(perimLim) + 1):
+
+            if not (m & 1 and n & 1) and isCoprime(m, n):
+                a = n * n - m * m
+                b = 2 * m * n
+                c = n * n + m * m
+
+                if a + b + c <= perimLim:
+                    A.append(a)
+                    B.append(b)
+                    C.append(c)
+
+    return A, B, C
+
+
+def genAllTriples(perimLim: int):
+    """Generates all Pythagorean triples with perimeter (a + b + c) < perimLim.
+
+    Args:
+        perimLim (int): perimeter limit.
+
+    Returns:
+        three lists A, B, C.
+    """
+
+    from math import isqrt
+
+    A = []
+    B = []
+    C = []
+
+    for m in range(1, isqrt(perimLim) + 1):
+        for n in range(m + 1, isqrt(perimLim) + 1):
+
+            if not (m & 1 and n & 1) and isCoprime(m, n):
+                a = n * n - m * m
+                b = 2 * m * n
+                c = n * n + m * m
+
+                k = 1
+                while k * (a + b + c) <= perimLim:
+                    print("hello")
+                    A.append(k * a)
+                    B.append(k * b)
+                    C.append(k * c)
+                    k += 1
+
+    return A, B, C
+
+
 # MISCELLANEOUS FUNCTIONS ######################################################
 
 

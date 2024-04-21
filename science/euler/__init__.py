@@ -14,6 +14,11 @@ __all__ = [
     "isJuf",
     "isPalindrome",
     "isPermutation",
+    "partition",
+    "fibonacci",
+    "genPanDigital",
+    "genPrimTriples",
+    "genAllTriples",
     "gcd",
 ]
 
@@ -32,4 +37,9 @@ from .euler import isPerfect
 from .euler import isJuf
 from .euler import isPalindrome
 from .euler import isPermutation
+from .euler import partition
+from .euler import fibonacci
+from .euler import genPanDigital
+from .euler import genPrimTriples
+from .euler import genAllTriples
 from .euler import gcd
