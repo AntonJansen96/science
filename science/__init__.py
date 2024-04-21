@@ -1,6 +1,6 @@
 """
-My science package. Contains cphmd, parsing, utility, vmd.
+My science package. Contains cphmd, euler, parsing, utility, vmd.
 """
 
-__all__ = ["cphmd", "parsing", "utility", "vmd"]
+__all__ = ["cphmd", "euler", "parsing", "utility", "vmd"]
 __author__ = "Anton Jansen"
