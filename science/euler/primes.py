@@ -162,6 +162,56 @@ class Primes:
 
         return result
 
+    def primefactors(self, num: int, multiplicity: bool = True) -> list:
+        """Find the prime factors of a number.
+
+        Args:
+            num (int): number.
+            multiplicity (bool, optional): include multiplicity. Defaults to True.
+
+        Returns:
+            list: prime factors.
+        """
+
+        # Speedup (on M1).
+        if self.isPrime(num):
+            return [num]
+
+        factors = []
+        idx = 1  # Start at second prime in primes (3) because we already checked 2.
+        
+        add = True  # Handle multiplicity.
+        while (num >> 1) << 1 == num:  # while num is divisible by 2
+            if add:
+                factors.append(2)
+                if not multiplicity:
+                    add = False
+            num //= 2  # num = num // 2
+
+        # Only have to check up until root of num.
+        while self.sieveArray[idx] <= isqrt(num):
+            prime = self.sieveArray[idx]
+            
+            add = True
+            while num % prime == 0:  # While num is divisible by prime ...
+                if add:
+                    factors.append(prime)  # ... add that prime to factors,
+                    if not multiplicity:
+                        add = False
+                num //= prime  # and divide.
+
+            idx += 1
+
+            # If we have reached the end of the current primes list, call expand() (i.e. double the list).
+            if idx == self.nPrimes:
+                self.__expand()
+
+        # If at the end we're left with a number larger than two, it must be a prime so add to factors.
+        if num > 2:
+            factors.append(num)
+
+        return factors
+
     def __millerRabin(self, num: int) -> bool:
         """Check if a number is prime using the Miller-Rabin primality test.
         Guaranteed to be correct for numbers less than 2^64.
