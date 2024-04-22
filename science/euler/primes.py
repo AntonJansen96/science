@@ -95,6 +95,73 @@ class Primes:
 
         return num > 1  # No number smaller than 2 is prime.
 
+    def primePi(self, num: int) -> int:
+        """Count the number of primes less than or equal to num.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            int: number of primes.
+        """
+
+        # Will contain all primes up to sqrt(num).
+        primes = []
+
+        # If primes contains enough elements then run a fast binary search:
+        if primes and primes[-1] > num:
+            # Find smallest number larger than num:
+            nextPrime = next((x for x in primes if x > num), None)
+            return primes.index(nextPrime)
+
+        v = isqrt(num)
+        # About sqrt(num) * 12 bytes, for num = 10^12 => 12 MByte plus primes[].
+        higher = [0] * (v + 2)
+        lower = [0] * (v + 2)
+        used = [False] * (v + 2)
+
+        result = num - 1  # Assume all numbers are primes.
+        # The remaining lines subtract composites until result contains #primes.
+
+        for p in range(2, v + 1):  # set up lower and upper bound.
+            lower[p] = p - 1
+            higher[p] = num // p - 1
+
+        for p in range(2, v + 1):
+            if lower[p] == lower[p - 1]:  # Composite?
+                continue
+
+            if (
+                not primes or p > primes[-1]
+            ):  # Store prime numbers (if not already existing).
+                primes.append(p)
+
+            temp = lower[p - 1]  # Remove more composites.
+            result -= higher[p] - temp
+
+            pSquare = p * p
+            end = min(v, num // pSquare)
+
+            j = 1 + (p & 1)  # Alternate between 1 and 2.
+
+            for i in range(p + j, end + 2, j):  # Adjust upper bound.
+                if used[i]:
+                    continue
+
+                d = i * p
+                if d <= v:
+                    higher[i] -= higher[d] - temp
+                else:
+                    higher[i] -= lower[num // d] - temp
+
+            for i in range(v, pSquare - 1, -1):  # Adjust lower bound.
+                lower[i] -= lower[i // p] - temp
+
+            for i in range(pSquare, end + 1, p * j):  # Cross off multiples.
+                used[i] = True
+
+        return result
+
     def __millerRabin(self, num: int) -> bool:
         """Check if a number is prime using the Miller-Rabin primality test.
         Guaranteed to be correct for numbers less than 2^64.
