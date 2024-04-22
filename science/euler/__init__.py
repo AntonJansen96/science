@@ -24,30 +24,10 @@ __all__ = [
     "dec2roman",
     "roman2dec",
     "gcd",
+    "leastCommonMultiple",
 ]
 
 __author__ = "Anton Jansen"
 
-from .euler import numDigits
-from .euler import sumDigits
-from .euler import countDigits
-from .euler import nthDigit
-from .euler import firstNdigits
-from .euler import lastNdigits
-from .euler import reverseNumber
-from .euler import isSquare
-from .euler import isCoprime
-from .euler import isPerfect
-from .euler import isJuf
-from .euler import isPalindrome
-from .euler import isPermutation
-from .euler import partition
-from .euler import fibonacci
-from .euler import genPanDigital
-from .euler import genPrimTriples
-from .euler import genAllTriples
-from .euler import num2vec
-from .euler import radix
-from .euler import dec2roman
-from .euler import roman2dec
-from .euler import gcd
+from .euler import *
+from .fastmath import *

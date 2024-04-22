@@ -1,3 +1,6 @@
+from math import isqrt
+from .fastmath import intlog10
+
 # NUMBERS AND DIGITS ###########################################################
 
 
@@ -11,9 +14,7 @@ def numDigits(num: int) -> int:
         int: number of digits.
     """
 
-    from math import log10
-
-    return int(log10(num)) + 1
+    return intlog10(num) + 1
 
 
 def sumDigits(num: int) -> int:
@@ -102,8 +103,6 @@ def firstNdigits(num: int, N: int) -> int:
 #         int: count.
 #     """
 
-#     from math import log10, floor
-
 #     num = exp * log10(base)
 #     num -= floor(num)
 #     num = 10**num
@@ -157,8 +156,6 @@ def isSquare(num: int) -> bool:
     Returns:
         bool: True if number is a square, False otherwise.
     """
-
-    from math import isqrt
 
     h = num & 0xF  # Last hexadecimal "digit".
 
@@ -326,8 +323,6 @@ def genPrimTriples(perimLim: int):
         three lists A, B, C.
     """
 
-    from math import isqrt
-
     A = []
     B = []
     C = []
@@ -357,8 +352,6 @@ def genAllTriples(perimLim: int):
     Returns:
         three lists A, B, C.
     """
-
-    from math import isqrt
 
     A = []
     B = []
@@ -494,3 +487,17 @@ def gcd(a: int, b: int) -> int:
     from math import gcd
 
     return gcd(a, b)
+
+
+def leastCommonMultiple(a: int, b: int) -> int:
+    """Returns the least common multiple of a and b.
+
+    Args:
+        a (int): number.
+        b (int): number.
+
+    Returns:
+        int: least common multiple.
+    """
+
+    return a * b // gcd(a, b)
