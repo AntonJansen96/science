@@ -316,33 +316,33 @@ def fastpow(n: int, m: int) -> int:
 
     if n == 0:
         return 0
-    
+
     if n == 1:
         return 1
-    
+
     if n == 2:
         return power2[m] if m < 63 else overflow()
-    
+
     if n == 3:
         return power3[m] if m < 40 else overflow()
-    
+
     if n == 4:
         return power4[m] if m < 32 else overflow()
-    
+
     if n == 5:
         return power5[m] if m < 28 else overflow()
-    
+
     if n == 6:
         return power6[m] if m < 25 else overflow()
-    
+
     if n == 7:
         return power7[m] if m < 23 else overflow()
-    
+
     if n == 8:
         return power8[m] if m < 21 else overflow()
-    
+
     if n == 9:
         return power9[m] if m < 20 else overflow()
-    
+
     if n == 10:
         return power10[m] if m < 19 else overflow()
