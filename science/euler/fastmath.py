@@ -1,6 +1,3 @@
-from math import pow
-
-
 def mulmod(a: int, b: int, m: int) -> int:
     """Returns the product of two numbers modulo m.
 
@@ -392,7 +389,7 @@ def fastpow(n: int, m: int) -> int:
 
     def overflow():
         print(f"fastpow: {m}^{n} larger than int64, using regular pow.")
-        return pow(n, m)
+        return pow(n, m, 1)
 
     if n == 0:
         return 0
@@ -428,4 +425,4 @@ def fastpow(n: int, m: int) -> int:
         return power10[m] if m < 19 else overflow()
 
     print(f"fastpow: {n} not in range [0, 10], using regular pow.")
-    return pow(n, m)
+    return pow(n, m, 1)
