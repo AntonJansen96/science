@@ -1,25 +1,7 @@
 from math import factorial as _factorial, comb as _comb
 from itertools import permutations as _permutations, combinations as _combinations
 
-from .euler import num2vec as _num2vec
-
-
-# Helper function.
-def _list2num(array: list) -> int:
-    """Convert a list to a number.
-
-    Args:
-        array (list): input.
-
-    Returns:
-        int: number.
-    """
-
-    number = 0
-    for digit in array:
-        number = number * 10 + digit
-
-    return number
+from .utility import num2list as _num2list, list2num as _list2num
 
 
 def numperms(array: list):
@@ -109,7 +91,7 @@ def numbersplit(number: int):
         list: split.
     """
 
-    n = _num2vec(number)
+    n = _num2list(number)
 
     for i in range(1 << (len(n) - 1)):
         result = []

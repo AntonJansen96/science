@@ -1,5 +1,6 @@
 from math import isqrt as _isqrt
 from .fastmath import intlog10 as _intlog10
+from .combinatorics import genperms as _genperms
 
 # NUMBERS AND DIGITS ###########################################################
 
@@ -299,18 +300,20 @@ def fibonacci():
         a, b = b, a + b
 
 
-def genPanDigital(a: int, b: int) -> list:
+def genPanDigital(a: int, b: int):
     """Generates all numbers that are a to b pandigital.
 
     Args:
         a (int): start.
         b (int): end.
 
-    Returns:
-        list: pandigital numbers.
+    Yields:
+        num: pandigital number.
     """
 
-    pass  # TODO: Implement once we have our permutations class.
+    for permutation in _genperms([digit for digit in range(a, b + 1)], asint=True):
+        if numDigits(permutation) == b - a + 1:
+            yield permutation
 
 
 def genPrimTriples(perimLim: int):
@@ -377,25 +380,6 @@ def genAllTriples(perimLim: int):
 
 
 # CONVERSIONS ##################################################################
-
-
-def num2vec(num: int) -> list:
-    """Converts a number to a vector of digits.
-
-    Args:
-        num (int): number.
-
-    Returns:
-        list: vector of digits.
-    """
-
-    numbers = []
-
-    while num:
-        numbers.append(num % 10)
-        num //= 10
-
-    return numbers[::-1]
 
 
 def radix(value: int, radix: int) -> int:
