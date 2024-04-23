@@ -6,7 +6,12 @@ class Primes:
     """Class for doing stuff with prime numbers."""
 
     def __init__(self, setMax: int = 1000) -> None:
-        """Initialize the class."""
+        """Initialize the Primes class.
+
+        Args:
+            setMax (int, optional): upper limit of numbers to check. Defaults to 1000.
+            Note: will expand the sieveArray automatically if setMax is exceeded.
+        """
 
         self._sieveArray = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
         self._nPrimes = 11  # Number of primes in sieveArray.
@@ -38,6 +43,7 @@ class Primes:
 
     def sieve(self, limit: int) -> list:
         """Generate all prime numbers up to a limit using the sieve of Eratosthenes.
+        Note: does not use self._sieveArray but starts from the beginning.
 
         Args:
             limit (int): limit.
@@ -260,8 +266,7 @@ class Primes:
             int: largest factor.
         """
 
-        properfactors = self.factors(num, proper=True)
-        return max(properfactors) if properfactors else 1
+        return max(self.factors(num, proper=True))
 
     def totient(self, num: int) -> int:
         """Calculate Euler's totient function for a number.
