@@ -32,3 +32,4 @@ __author__ = "Anton Jansen"
 from .euler import *
 from .fastmath import *
 from .primes import *
+from .combinatorics import *
