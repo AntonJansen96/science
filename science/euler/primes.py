@@ -41,7 +41,8 @@ class Primes:
 
         self._nPrimes = len(self._sieveArray)
 
-    def sieve(self, limit: int) -> list:
+    @staticmethod
+    def sieve(limit: int) -> list:
         """Generate all prime numbers up to a limit using the sieve of Eratosthenes.
         Note: does not use self._sieveArray but starts from the beginning.
 
@@ -70,7 +71,8 @@ class Primes:
 
         return sieve
 
-    def isprime(self, num: int) -> bool:
+    @staticmethod
+    def isprime(num: int) -> bool:
         """Check if a number is prime.
 
         Args:
@@ -81,7 +83,8 @@ class Primes:
         """
 
         # Optimization: miller Rabin is faster than implementation below (on M1).
-        return self._millerrabin(num)
+        # If we want to use the code below, isprime can no-longer be a @staticmethod.
+        return Primes._millerrabin(num)
 
         if (num & 1) == 0:  # if num is even.
             return num == 2  # only even prime is 2.
@@ -101,7 +104,8 @@ class Primes:
 
         return num > 1  # No number smaller than 2 is prime.
 
-    def primepi(self, num: int) -> int:
+    @staticmethod
+    def primepi(num: int) -> int:
         """Count the number of primes less than or equal to num.
 
         Args:
@@ -323,7 +327,8 @@ class Primes:
 
         return x != y and num == y
 
-    def _millerrabin(self, num: int) -> bool:
+    @staticmethod
+    def _millerrabin(num: int) -> bool:
         """Check if a number is prime using the Miller-Rabin primality test.
         Guaranteed to be correct for numbers less than 2^64.
 
