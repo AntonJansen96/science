@@ -8,33 +8,33 @@ class Primes:
     def __init__(self, setMax: int = 1000) -> None:
         """Initialize the class."""
 
-        self.sieveArray = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
-        self.nPrimes = 11  # Number of primes in sieveArray.
-        self.max = 1000  # Maximum number.
+        self._sieveArray = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
+        self._nPrimes = 11  # Number of primes in sieveArray.
+        self._max = 1000  # Maximum number.
 
-        while self.max < setMax:
-            self.__expand()
+        while self._max < setMax:
+            self._expand()
 
-    def __expand(self) -> None:
+    def _expand(self) -> None:
         """Expand the sieveArray."""
 
-        self.max *= 4  # Use 4 because root(4) = 2 is factor to increase primes with.
-        next = self.sieveArray[-1]
+        self._max *= 4  # Use 4 because root(4) = 2 is factor to increase primes with.
+        next = self._sieveArray[-1]
 
-        while next < isqrt(self.max) + 1:
+        while next < isqrt(self._max) + 1:
 
-            for prime in self.sieveArray:
+            for prime in self._sieveArray:
 
                 if next % prime == 0:
                     break
 
                 if prime > isqrt(next):
-                    self.sieveArray.append(next)
+                    self._sieveArray.append(next)
                     break
 
             next += 2
 
-        self.nPrimes = len(self.sieveArray)
+        self._nPrimes = len(self._sieveArray)
 
     def sieve(self, limit: int) -> list:
         """Generate all prime numbers up to a limit using the sieve of Eratosthenes.
@@ -64,7 +64,7 @@ class Primes:
 
         return sieve
 
-    def isPrime(self, num: int) -> bool:
+    def isprime(self, num: int) -> bool:
         """Check if a number is prime.
 
         Args:
@@ -75,27 +75,27 @@ class Primes:
         """
 
         # Optimization: miller Rabin is faster than implementation below (on M1).
-        return self.__millerRabin(num)
+        return self._millerrabin(num)
 
         if (num & 1) == 0:  # if num is even.
             return num == 2  # only even prime is 2.
 
         idx = 1
-        while self.sieveArray[idx] <= isqrt(num):
+        while self._sieveArray[idx] <= isqrt(num):
             # If divisible by a prime, smaller than
             # the root of num, num is not prime.
 
-            if num % self.sieveArray[idx] == 0:
+            if num % self._sieveArray[idx] == 0:
                 return False
 
             idx += 1
 
-            if idx == self.nPrimes:
-                self.__expand()
+            if idx == self._nPrimes:
+                self._expand()
 
         return num > 1  # No number smaller than 2 is prime.
 
-    def primePi(self, num: int) -> int:
+    def primepi(self, num: int) -> int:
         """Count the number of primes less than or equal to num.
 
         Args:
@@ -173,13 +173,13 @@ class Primes:
             list: prime factors.
         """
 
-        # Speedup (on M1).
-        if self.isPrime(num):
+        # Speedup.
+        if self.isprime(num):
             return [num]
 
         factors = []
         idx = 1  # Start at second prime in primes (3) because we already checked 2.
-        
+
         add = True  # Handle multiplicity.
         while (num >> 1) << 1 == num:  # while num is divisible by 2
             if add:
@@ -189,9 +189,9 @@ class Primes:
             num //= 2  # num = num // 2
 
         # Only have to check up until root of num.
-        while self.sieveArray[idx] <= isqrt(num):
-            prime = self.sieveArray[idx]
-            
+        while self._sieveArray[idx] <= isqrt(num):
+            prime = self._sieveArray[idx]
+
             add = True
             while num % prime == 0:  # While num is divisible by prime ...
                 if add:
@@ -203,8 +203,8 @@ class Primes:
             idx += 1
 
             # If we have reached the end of the current primes list, call expand() (i.e. double the list).
-            if idx == self.nPrimes:
-                self.__expand()
+            if idx == self._nPrimes:
+                self._expand()
 
         # If at the end we're left with a number larger than two, it must be a prime so add to factors.
         if num > 2:
@@ -212,7 +212,87 @@ class Primes:
 
         return factors
 
-    def __millerRabin(self, num: int) -> bool:
+    def factors(self, num: int, proper: bool = False) -> list:
+        """Find all factors of a number. Note: list is not sorted.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            list: factors.
+        """
+
+        assert num > 0, "num <= 0"
+
+        # Speedup.
+        if self.isprime(num):
+            return [1] if proper else [1, num]
+
+        factors = []
+
+        def findfactors(num, primefactors, idx, factor):
+
+            if idx == len(primefactors):
+
+                factors.append(factor)
+                return
+
+            while True:
+
+                findfactors(num, primefactors, idx + 1, factor)
+                factor *= primefactors[idx]
+
+                if num % factor != 0:
+                    break
+
+        findfactors(num, self.primefactors(num, multiplicity=False), 0, 1)
+
+        return factors[:-1] if proper else factors
+
+    def largestfactor(self, num: int) -> int:
+        """Find the largest nontrivial factor of a number.
+        Returns 1 if a number is prime.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            int: largest factor.
+        """
+
+        properfactors = self.factors(num, proper=True)
+        return max(properfactors) if properfactors else 1
+
+    def totient(self, num: int) -> int:
+        """Calculate Euler's totient function for a number.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            int: totient.
+        """
+
+        pass
+
+    def isamicable(self, num: int) -> bool:
+        """Check if a number is amicable.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            bool: True if amicable, False otherwise.
+        """
+
+        assert num > 1, "num <= 1"
+
+        x = sum(self.factors(num, proper=True))
+        y = sum(self.factors(x, proper=True))
+
+        return x != y and num == y
+
+    def _millerrabin(self, num: int) -> bool:
         """Check if a number is prime using the Miller-Rabin primality test.
         Guaranteed to be correct for numbers less than 2^64.
 
@@ -224,7 +304,7 @@ class Primes:
         """
 
         # Only guaranteed to work for num < 2^64.
-        assert num < 18446744073709551616
+        assert num < 18446744073709551616, "num > 2^64"
 
         bitmask_primes_2_to_31 = (  # Trivial cases.
             (1 << 2)
