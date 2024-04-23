@@ -245,7 +245,7 @@ def isPermutation(a: int, b: int) -> bool:
         bool: True if a and b are permutations of each other, False otherwise.
     """
 
-    def __fingerprint(num):
+    def fingerprint(num):
         result = 0
         while num > 0:
             digit = num % 10
@@ -253,7 +253,7 @@ def isPermutation(a: int, b: int) -> bool:
             result += 1 << (5 * digit)
         return result
 
-    return __fingerprint(a) == __fingerprint(b)
+    return fingerprint(a) == fingerprint(b)
 
 
 # PARTITIONING #################################################################
