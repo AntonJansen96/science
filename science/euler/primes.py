@@ -3,7 +3,7 @@ from .fastmath import powmod as _powmod, mulmod as _mulmod
 
 
 class Primes:
-    """Class for doing stuff with prime numbers."""
+    """Class for doing stuff with prime numbers and factoring."""
 
     def __init__(self, setMax: int = 1000) -> None:
         """Initialize the Primes class.
@@ -236,7 +236,7 @@ class Primes:
 
         assert num > 0, "num <= 0"
 
-        # Do not first check if a number is prime, because 
+        # Do not first check if a number is prime, because
         # we're already doing that in self.primefactors().
         primefactors = self.primefactors(num)
 
@@ -355,6 +355,18 @@ class Primes:
         y = sum(self.factors(x, proper=True))
 
         return x != y and num == y
+
+    def isabundant(self, num: int) -> bool:
+        """Check if a number is abundant.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            bool: True if abundant, False otherwise.
+        """
+
+        return sum(self.factors(num)) > 2 * num
 
     @staticmethod
     def _millerrabin(num: int) -> bool:
