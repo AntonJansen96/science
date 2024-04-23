@@ -222,11 +222,13 @@ class Primes:
 
         return factors
 
-    def factors(self, num: int, proper: bool = False) -> list:
-        """Find all factors of a number. Note: list is not sorted.
+    def factors(self, num: int, proper: bool = False):
+        """Find all factors of a number.
+        Note: factors are an unsorted set while proper factors are a sorted list.
 
         Args:
             num (int): number.
+            proper (bool): exclude num itself.
 
         Returns:
             list: factors.
@@ -234,30 +236,57 @@ class Primes:
 
         assert num > 0, "num <= 0"
 
-        # Speedup.
-        if self.isprime(num):
-            return [1] if proper else [1, num]
+        # Do not first check if a number is prime, because 
+        # we're already doing that in self.primefactors().
+        primefactors = self.primefactors(num)
 
-        factors = []
+        # If prime, return immediately.
+        if len(primefactors) == 1:
+            return [1] if proper else {1, num}
 
-        def findfactors(num, primefactors, idx, factor):
+        # Iterative approach with bit manipulation technique.
+        factors = {1}
+        for prime in primefactors:
+            factors.update({factor * prime for factor in factors})
 
-            if idx == len(primefactors):
+        # We need to sort for proper factors because
+        # the number itself is not always at the end.
+        return sorted(factors)[:-1] if proper else factors
 
-                factors.append(factor)
-                return
+    # def factors(self, num: int, proper: bool = False) -> list:
+    #     """Find all factors of a number. Note: list is not sorted.
 
-            while True:
+    #     Args:
+    #         num (int): number.
+    #         proper (bool): exclude num itself.
 
-                findfactors(num, primefactors, idx + 1, factor)
-                factor *= primefactors[idx]
+    #     Returns:
+    #         list: factors.
+    #     """
 
-                if num % factor != 0:
-                    break
+    #     assert num > 0, "num <= 0"
 
-        findfactors(num, self.primefactors(num, multiplicity=False), 0, 1)
+    #     factors = []
 
-        return factors[:-1] if proper else factors
+    #     # This is depth-first search is slow, maybe want to find a faster method.
+    #     def findfactors(num, primefactors, idx, factor):
+
+    #         if idx == len(primefactors):
+
+    #             factors.append(factor)
+    #             return
+
+    #         while True:
+
+    #             findfactors(num, primefactors, idx + 1, factor)
+    #             factor *= primefactors[idx]
+
+    #             if num % factor != 0:
+    #                 break
+
+    #     findfactors(num, self.primefactors(num, multiplicity=False), 0, 1)
+
+    #     return factors[:-1] if proper else factors
 
     def largestfactor(self, num: int) -> int:
         """Find the largest nontrivial factor of a number.
