@@ -273,7 +273,33 @@ class Primes:
             int: totient.
         """
 
-        pass
+        totient = num
+
+        if (num >> 1) << 1 == num:  # num % 2 == 0
+            totient -= totient // 2
+
+            while (num >> 1) << 1 == num:  # while num % 2 = 0, num /= 2
+                num >>= 1
+
+        idx = 1
+        while self._sieveArray[idx] <= isqrt(num):
+            prime = self._sieveArray[idx]
+
+            if num % prime == 0:
+                totient -= totient // prime
+
+                while num % prime == 0:
+                    num //= prime
+
+            idx += 1
+
+            if idx == self._nPrimes:  # If we have reached the end of the
+                self._expand()  # current primes list, call expand().
+
+        if num > 2:
+            totient -= totient // num
+
+        return totient
 
     def isamicable(self, num: int) -> bool:
         """Check if a number is amicable.
