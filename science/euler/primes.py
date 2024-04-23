@@ -1,5 +1,5 @@
-from math import isqrt
-from .fastmath import powmod, mulmod
+from math import isqrt as _isqrt
+from .fastmath import powmod as _powmod, mulmod as _mulmod
 
 
 class Primes:
@@ -26,14 +26,14 @@ class Primes:
         self._max *= 4  # Use 4 because root(4) = 2 is factor to increase primes with.
         next = self._sieveArray[-1]
 
-        while next < isqrt(self._max) + 1:
+        while next < _isqrt(self._max) + 1:
 
             for prime in self._sieveArray:
 
                 if next % prime == 0:
                     break
 
-                if prime > isqrt(next):
+                if prime > _isqrt(next):
                     self._sieveArray.append(next)
                     break
 
@@ -62,7 +62,7 @@ class Primes:
                 if next % prime == 0:
                     break
 
-                if prime > isqrt(next):
+                if prime > _isqrt(next):
                     sieve.append(next)
                     break
 
@@ -87,7 +87,7 @@ class Primes:
             return num == 2  # only even prime is 2.
 
         idx = 1
-        while self._sieveArray[idx] <= isqrt(num):
+        while self._sieveArray[idx] <= _isqrt(num):
             # If divisible by a prime, smaller than
             # the root of num, num is not prime.
 
@@ -120,7 +120,7 @@ class Primes:
             nextPrime = next((x for x in primes if x > num), None)
             return primes.index(nextPrime)
 
-        v = isqrt(num)
+        v = _isqrt(num)
         # About sqrt(num) * 12 bytes, for num = 10^12 => 12 MByte plus primes[].
         higher = [0] * (v + 2)
         lower = [0] * (v + 2)
@@ -195,7 +195,7 @@ class Primes:
             num //= 2  # num = num // 2
 
         # Only have to check up until root of num.
-        while self._sieveArray[idx] <= isqrt(num):
+        while self._sieveArray[idx] <= _isqrt(num):
             prime = self._sieveArray[idx]
 
             add = True
@@ -287,7 +287,7 @@ class Primes:
                 num >>= 1
 
         idx = 1
-        while self._sieveArray[idx] <= isqrt(num):
+        while self._sieveArray[idx] <= _isqrt(num):
             prime = self._sieveArray[idx]
 
             if num % prime == 0:
@@ -399,7 +399,7 @@ class Primes:
 
         testAgainstIndex = 0
         while testAgainst[testAgainstIndex] != STOP:  # Test num against all bases.
-            x = powmod(testAgainst[testAgainstIndex], d, num)
+            x = _powmod(testAgainst[testAgainstIndex], d, num)
             testAgainstIndex += 1
 
             if x == 1 or x == num - 1:  # Is test^d % num == 1 || -1 ?
@@ -407,7 +407,7 @@ class Primes:
 
             maybePrime = False  # Now either prime or strong pseudo-prime.
             for r in range(shift):  # Check test^(d*2^r) for 0 <= r < shift:
-                x = mulmod(x, x, num)  # x^2 % num (initial x was test^d)
+                x = _mulmod(x, x, num)  # x^2 % num (initial x was test^d)
 
                 if x == 1:  # If x % num == 1 => not prime.
                     return False

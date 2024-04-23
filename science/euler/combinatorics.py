@@ -1,7 +1,5 @@
-from math import factorial as _factorial
-from math import comb as _comb
-from itertools import permutations as _permutations
-from itertools import combinations as _combinations
+from math import factorial as _factorial, comb as _comb
+from itertools import permutations as _permutations, combinations as _combinations
 
 from .euler import num2vec as _num2vec
 

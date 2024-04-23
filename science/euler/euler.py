@@ -1,5 +1,5 @@
-from math import isqrt
-from .fastmath import intlog10
+from math import isqrt as _isqrt
+from .fastmath import intlog10 as _intlog10
 
 # NUMBERS AND DIGITS ###########################################################
 
@@ -14,7 +14,7 @@ def numDigits(num: int) -> int:
         int: number of digits.
     """
 
-    return intlog10(num) + 1
+    return _intlog10(num) + 1
 
 
 def sumDigits(num: int) -> int:
@@ -163,7 +163,7 @@ def isSquare(num: int) -> bool:
         return False
 
     if h not in [2, 3, 5, 6, 7, 8]:
-        introot = isqrt(num)
+        introot = _isqrt(num)
         return introot * introot == num
 
     return False
@@ -327,8 +327,8 @@ def genPrimTriples(perimLim: int):
     B = []
     C = []
 
-    for m in range(1, isqrt(perimLim) + 1):
-        for n in range(m + 1, isqrt(perimLim) + 1):
+    for m in range(1, _isqrt(perimLim) + 1):
+        for n in range(m + 1, _isqrt(perimLim) + 1):
 
             if not (m & 1 and n & 1) and isCoprime(m, n):
                 a = n * n - m * m
@@ -357,8 +357,8 @@ def genAllTriples(perimLim: int):
     B = []
     C = []
 
-    for m in range(1, isqrt(perimLim) + 1):
-        for n in range(m + 1, isqrt(perimLim) + 1):
+    for m in range(1, _isqrt(perimLim) + 1):
+        for n in range(m + 1, _isqrt(perimLim) + 1):
 
             if not (m & 1 and n & 1) and isCoprime(m, n):
                 a = n * n - m * m
