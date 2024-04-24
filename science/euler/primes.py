@@ -19,12 +19,14 @@ class Primes:
         self._nPrimes = 11  # Number of primes in sieveArray.
         self._max = 1000  # Maximum number.
 
+        # Handle logging.
         if self._debug:
-            import logging
+            import logging # Lazy import.
 
             logging.basicConfig(level=logging.INFO)
             self._logger = logging.getLogger(__name__)
 
+        # Call expand if request max prime size is larger than current max.
         while self._max < setMax:
             self._log("_expand() called from __init__.")
             self._expand()
@@ -390,6 +392,7 @@ class Primes:
             bool: True if abundant, False otherwise.
         """
 
+        # Abundant if sum of factors is greater than 2 * num.
         return sum(self.factors(num)) > 2 * num
 
     @staticmethod
