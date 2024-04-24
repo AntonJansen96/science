@@ -1,3 +1,4 @@
+from typing import List, Generator, Tuple
 from math import isqrt as _isqrt
 from .fastmath import intlog10 as _intlog10
 from .combinatorics import genperms as _genperms
@@ -260,7 +261,7 @@ def isPermutation(a: int, b: int) -> bool:
 # PARTITIONING #################################################################
 
 
-def partition(money: int, coins: list = []) -> int:
+def partition(money: int, coins: List[int] = []) -> int:
     """Returns the number of ways money can be divided (optionally: by coins provided in the coins array).
 
     Args:
@@ -287,7 +288,7 @@ def partition(money: int, coins: list = []) -> int:
 # GENERATORS ###################################################################
 
 
-def fibonacci():
+def fibonacci() -> Generator[int, None, None]:
     """Generator for Fibonacci numbers.
 
     Yields:
@@ -300,7 +301,7 @@ def fibonacci():
         a, b = b, a + b
 
 
-def genPanDigital(a: int, b: int):
+def genPanDigital(a: int, b: int) -> Generator[int, None, None]:
     """Generates all numbers that are a to b pandigital.
 
     Args:
@@ -316,7 +317,7 @@ def genPanDigital(a: int, b: int):
             yield permutation
 
 
-def genPrimTriples(perimLim: int):
+def genPrimTriples(perimLim: int) -> Tuple[List[int], List[int], List[int]]:
     """Generates primitive Pythagorean triples with perimeter (a + b + c) < perimLim.
 
     Args:
@@ -346,7 +347,7 @@ def genPrimTriples(perimLim: int):
     return A, B, C
 
 
-def genAllTriples(perimLim: int):
+def genAllTriples(perimLim: int) -> Tuple[List[int], List[int], List[int]]:
     """Generates all Pythagorean triples with perimeter (a + b + c) < perimLim.
 
     Args:

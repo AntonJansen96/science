@@ -19,7 +19,6 @@ __all__ = [
     "genPanDigital",
     "genPrimTriples",
     "genAllTriples",
-    "num2vec",
     "radix",
     "dec2roman",
     "roman2dec",

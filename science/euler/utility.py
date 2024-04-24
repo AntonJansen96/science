@@ -1,4 +1,6 @@
-def num2list(num: int) -> list:
+from typing import List
+
+def num2list(num: int) -> List[int]:
     """Converts a number to a vector of digits.
 
     Args:
@@ -17,7 +19,7 @@ def num2list(num: int) -> list:
     return numbers[::-1]
 
 
-def list2num(array: list) -> int:
+def list2num(array: List[int]) -> int:
     """Convert a list to a number.
 
     Args:

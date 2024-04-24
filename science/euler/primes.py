@@ -1,3 +1,4 @@
+from typing import List, Set, Union
 from math import isqrt as _isqrt
 from .fastmath import powmod as _powmod, mulmod as _mulmod
 
@@ -42,7 +43,7 @@ class Primes:
         self._nPrimes = len(self._sieveArray)
 
     @staticmethod
-    def sieve(limit: int) -> list:
+    def sieve(limit: int) -> List[int]:
         """Generate all prime numbers up to a limit using the sieve of Eratosthenes.
         Note: does not use self._sieveArray but starts from the beginning.
 
@@ -172,7 +173,7 @@ class Primes:
 
         return result
 
-    def primefactors(self, num: int, multiplicity: bool = True) -> list:
+    def primefactors(self, num: int, multiplicity: bool = True) -> List[int]:
         """Find the prime factors of a number.
 
         Args:
@@ -222,7 +223,7 @@ class Primes:
 
         return factors
 
-    def factors(self, num: int, proper: bool = False):
+    def factors(self, num: int, proper: bool = False) -> Union[Set[int], List[int]]:
         """Find all factors of a number.
         Note: factors are an unsorted set while proper factors are a sorted list.
 
@@ -253,7 +254,7 @@ class Primes:
         # the number itself is not always at the end.
         return sorted(factors)[:-1] if proper else factors
 
-    # def factors(self, num: int, proper: bool = False) -> list:
+    # def factors(self, num: int, proper: bool = False) -> List[int]:
     #     """Find all factors of a number. Note: list is not sorted.
 
     #     Args:
