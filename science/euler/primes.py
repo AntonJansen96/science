@@ -21,7 +21,7 @@ class Primes:
 
         # Handle logging.
         if self._debug:
-            import logging # Lazy import.
+            import logging  # Lazy import.
 
             logging.basicConfig(level=logging.INFO)
             self._logger = logging.getLogger(__name__)
