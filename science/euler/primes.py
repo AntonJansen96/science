@@ -6,7 +6,7 @@ from .fastmath import powmod as _powmod, mulmod as _mulmod
 class Primes:
     """Class for doing stuff with prime numbers and factoring."""
 
-    def __init__(self, setMax: int = 1000) -> None:
+    def __init__(self, setMax: int = 1000, debug: bool = False) -> None:
         """Initialize the Primes class.
 
         Args:
@@ -14,17 +14,33 @@ class Primes:
             Note: will expand the sieveArray automatically if setMax is exceeded.
         """
 
+        self._debug = debug
         self._sieveArray = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
         self._nPrimes = 11  # Number of primes in sieveArray.
         self._max = 1000  # Maximum number.
 
+        if self._debug:
+            import logging
+
+            logging.basicConfig(level=logging.INFO)
+            self._logger = logging.getLogger(__name__)
+
         while self._max < setMax:
+            self._log("_expand() called from __init__.")
             self._expand()
+
+    def _log(self, message: str) -> None:
+        """Print a logging message using Python's logging module."""
+
+        if self._debug:
+            self._logger.info(message)
 
     def _expand(self) -> None:
         """Expand the sieveArray."""
 
         self._max *= 4  # Use 4 because root(4) = 2 is factor to increase primes with.
+        self._log(f"_max is now {self._max}.")
+
         next = self._sieveArray[-1]
 
         while next < _isqrt(self._max) + 1:
@@ -40,6 +56,11 @@ class Primes:
 
             next += 2
 
+        self._log(
+            "Length of _sieveArray is now {}, largest prime is {}.".format(
+                len(self._sieveArray), self._sieveArray[-1]
+            )
+        )
         self._nPrimes = len(self._sieveArray)
 
     @staticmethod
@@ -213,11 +234,13 @@ class Primes:
 
             idx += 1
 
-            # If we have reached the end of the current primes list, call expand() (i.e. double the list).
+            # If we have reached the end of the current primes list,
+            # call expand() (i.e. double the list).
             if idx == self._nPrimes:
                 self._expand()
 
-        # If at the end we're left with a number larger than two, it must be a prime so add to factors.
+        # If at the end we're left with a number larger than two,
+        # it must be a prime so add to factors.
         if num > 2:
             factors.append(num)
 
