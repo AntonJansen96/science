@@ -1,5 +1,6 @@
 from typing import List
 
+
 def num2list(num: int) -> List[int]:
     """Converts a number to a vector of digits.
 
