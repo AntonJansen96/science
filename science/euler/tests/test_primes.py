@@ -23,15 +23,6 @@ def test_sieve():
     assert Primes.sieve(40) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
 
 
-def test_genprime():
-    prime = Primes.genprime()
-    assert next(prime) == 2
-    assert next(prime) == 3
-    assert next(prime) == 5
-    assert next(prime) == 7
-    assert next(prime) == 11
-
-
 def test_iscircularprime():
     assert Primes.iscircularprime(197) == True
     assert Primes.iscircularprime(227) == False

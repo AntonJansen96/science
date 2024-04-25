@@ -71,9 +71,24 @@ class Primes:
         self._nPrimes = len(self._sieveArray)
 
     @staticmethod
+    def nextprime() -> Generator[int, None, None]:
+        """Infinite generator for prime numbers using the Miller Rabin test.
+        This is faster than using the Sieve of Eratosthenes (in Python on M1).
+
+        Yields:
+            int: prime number.
+        """
+
+        yield 2
+        num = 3
+        while True:
+            if Primes.isprime(num):
+                yield num
+            num += 2
+
+    @staticmethod
     def sieve(limit: int) -> List[int]:
-        """Generate all prime numbers up to a limit using the sieve of Eratosthenes.
-        Note: does not use self._sieveArray but starts from the beginning.
+        """Returns a list of all primes numbers up to and including limit.
 
         Args:
             limit (int): limit.
@@ -82,53 +97,14 @@ class Primes:
             list: prime numbers.
         """
 
-        sieve = [2]
-        next = 3
+        prime = Primes.nextprime()
+        primes = []
+        newprime = 0
+        while newprime <= limit:
+            newprime = next(prime)
+            primes.append(newprime)
 
-        while next <= limit:
-
-            for prime in sieve:
-
-                if next % prime == 0:
-                    break
-
-                if prime > _isqrt(next):
-                    sieve.append(next)
-                    break
-
-            next += 2
-
-        return sieve
-
-    @staticmethod
-    def genprime() -> Generator[int, None, None]:
-        """Infinite generator for prime numbers using the Sieve of Eratosthenes.
-        Is more memory efficient because it only needs to store up to the
-        square root of the largest prime yielded.
-
-        Yields:
-            int: prime number.
-        """
-
-        yield 2
-
-        # Follow the same logic as in the sieve() function.
-        primes = [2]
-        next = 3
-
-        while True:
-
-            for prime in primes:
-
-                if next % prime == 0:
-                    break
-
-                if prime > _isqrt(next):
-                    primes.append(next)
-                    yield next
-                    break
-
-            next += 2
+        return primes[:-1] if primes[-1] > limit else primes
 
     @staticmethod
     def mersennexponents() -> List[int]:
