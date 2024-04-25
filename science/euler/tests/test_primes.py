@@ -35,3 +35,7 @@ def test_genprime():
 def test_iscircularprime():
     assert Primes.iscircularprime(197) == True
     assert Primes.iscircularprime(227) == False
+
+
+def test_primerange():
+    assert Primes.primerange(200, 250) == [211, 223, 227, 229, 233, 239, 241]

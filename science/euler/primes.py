@@ -198,6 +198,29 @@ class Primes:
             num = result
 
     @staticmethod
+    def primerange(start: int, stop: int) -> List[int]:
+        """Returns a list all prime numbers between start and stop.
+
+        Args:
+            start (int): start.
+            stop (int): stop.
+
+        Returns:
+            list: prime numbers.
+        """
+
+        # Using the miller Rabin algorithm in isprime() is faster than
+        # doing this using a sieve and storing the starting index!
+
+        primes = []
+        for num in range(start, stop + 1):
+
+            if Primes.isprime(num):
+                primes.append(num)
+
+        return primes
+
+    @staticmethod
     def primepi(num: int) -> int:
         """Count the number of primes less than or equal to num.
 
