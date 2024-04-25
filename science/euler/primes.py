@@ -206,6 +206,20 @@ class Primes:
             num = result
 
     @staticmethod
+    def issafeprime(num: int) -> bool:
+        """Check if a number is a Sophie Germain prime. Such a prime number
+        of the form 2p + 1 where p is also prime.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            bool: True if safe prime, False otherwise.
+        """
+
+        return Primes.isprime(num) and Primes.isprime(2 * num + 1)
+
+    @staticmethod
     def primerange(start: int, stop: int) -> List[int]:
         """Returns a list all prime numbers between start and stop.
 
