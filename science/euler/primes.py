@@ -24,6 +24,10 @@ class Primes:
         self._nPrimes = 11  # Number of primes in sieveArray.
         self._max = 1000  # Maximum number.
 
+        self._nextprime = Primes.nextprime()  # For _expand().
+        for _ in range(11):  # Skip first 11 primes as we already have them.
+            next(self._nextprime)
+
         # Handle logging.
         if self._debug:
             import logging  # Lazy import.
@@ -48,20 +52,12 @@ class Primes:
         self._max *= 4  # Use 4 because root(4) = 2 is factor to increase primes with.
         self._log(f"_max is now {self._max}.")
 
-        next = self._sieveArray[-1]
+        new = self._sieveArray[-1]
 
-        while next < _isqrt(self._max) + 1:
+        while new < _isqrt(self._max) + 1:
 
-            for prime in self._sieveArray:
-
-                if next % prime == 0:
-                    break
-
-                if prime > _isqrt(next):
-                    self._sieveArray.append(next)
-                    break
-
-            next += 2
+            new = next(self._nextprime)
+            self._sieveArray.append(new)
 
         self._log(
             "Length of _sieveArray is now {}, largest prime is {}.".format(

@@ -16,7 +16,7 @@ def test_expand():
     primes._expand()
     assert primes._max == 4000
     assert len(primes._sieveArray) == 19
-    assert primes._sieveArray[-1] == 61
+    assert primes._sieveArray[-1] == 67
 
 
 def test_sieve():
