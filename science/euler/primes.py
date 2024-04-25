@@ -1,7 +1,11 @@
 from typing import List, Set, Union, Generator
 from math import isqrt as _isqrt
 from .fastmath import powmod as _powmod, mulmod as _mulmod
-from .euler import numDigits as _numDigits, lastNdigits as _lastNdigits
+from .euler import (
+    numDigits as _numDigits,
+    lastNdigits as _lastNdigits,
+    reverseNumber as _reverseNumber,
+)
 
 
 class Primes:
@@ -486,6 +490,23 @@ class Primes:
 
         # Abundant if sum of factors is greater than 2 * num.
         return sum(self.factors(num)) > 2 * num
+
+    @staticmethod
+    def isemirp(num: int, checknum: bool = True) -> bool:
+        """Check if a number is an emirp: a prime number that reversed is still prime.
+
+        Args:
+            num (int): number.
+            checknum (bool, optional): also check if num is prime. Defaults to True.
+
+        Returns:
+            bool: True if emirp, False otherwise.
+        """
+
+        if checknum:
+            return Primes.isprime(num) and Primes.isprime(_reverseNumber(num))
+        else:
+            return Primes.isprime(_reverseNumber(num))
 
     @staticmethod
     def _millerrabin(num: int) -> bool:
