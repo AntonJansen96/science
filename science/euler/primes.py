@@ -132,7 +132,7 @@ class Primes:
 
     @staticmethod
     def mersennexponents() -> List[int]:
-        """Returns a list of all known Mersenne prime exponents p.
+        """Returns a list of all known Mersenne prime exponents p (A000043).
         Mersenne primes are prime numbers of the form 2^p - 1 where p is prime.
 
         Returns:
@@ -146,6 +146,17 @@ class Primes:
                 24036583, 25964951, 30402457, 32582657, 37156667, 42643801, 
                 43112609, 57885161]
         # fmt:on
+
+    @staticmethod
+    def fermatexponents() -> List[int]:
+        """Returns a list of all known Fermat prime exponents (A019434).
+        Fermat primes are prime numbers of the form 2^(2^n) + 1.
+
+        Returns:
+            list: Fermat prime exponents.
+        """
+
+        return [3, 5, 17, 257, 65537]
 
     @staticmethod
     def isprime(num: int) -> bool:
