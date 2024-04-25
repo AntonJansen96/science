@@ -1,6 +1,6 @@
 from typing import List, Generator, Tuple
 from math import isqrt as _isqrt
-from .fastmath import intlog10 as _intlog10
+from .fastmath import intlog10 as _intlog10, mulmod as _mulmod
 from .combinatorics import genperms as _genperms
 
 # NUMBERS AND DIGITS ###########################################################
@@ -256,6 +256,26 @@ def isPermutation(a: int, b: int) -> bool:
         return result
 
     return fingerprint(a) == fingerprint(b)
+
+
+def isAutomorphic(num: int) -> bool:
+    """Check if a number is automorphic.
+    Automorphic means that the square of the number ends with the number itself.
+
+    Args:
+        num (int): number.
+
+    Returns:
+        bool: True if number is automorphic, False otherwise.
+    """
+
+    m = 1
+    temp = num
+    while temp > 0:
+        m *= 10
+        temp //= 10
+
+    return num == _mulmod(num, num, m)
 
 
 # PARTITIONING #################################################################

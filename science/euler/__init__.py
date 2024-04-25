@@ -14,6 +14,7 @@ __all__ = [
     "isJuf",
     "isPalindrome",
     "isPermutation",
+    "isAutomorphic",
     "partition",
     "fibonacci",
     "genPanDigital",
