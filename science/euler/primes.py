@@ -1,4 +1,4 @@
-from typing import List, Set, Union
+from typing import List, Set, Union, Generator
 from math import isqrt as _isqrt
 from .fastmath import powmod as _powmod, mulmod as _mulmod
 from .euler import numDigits as _numDigits, lastNdigits as _lastNdigits
@@ -95,6 +95,36 @@ class Primes:
             next += 2
 
         return sieve
+
+    @staticmethod
+    def genprime() -> Generator[int, None, None]:
+        """Infinite generator for prime numbers using the Sieve of Eratosthenes.
+        Is more memory efficient because it only needs to store up to the
+        square root of the largest prime yielded.
+
+        Yields:
+            int: prime number.
+        """
+
+        yield 2
+
+        # Follow the same logic as in the sieve() function.
+        primes = [2]
+        next = 3
+
+        while True:
+
+            for prime in primes:
+
+                if next % prime == 0:
+                    break
+
+                if prime > _isqrt(next):
+                    primes.append(next)
+                    yield next
+                    break
+
+            next += 2
 
     @staticmethod
     def isprime(num: int) -> bool:
