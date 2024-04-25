@@ -1,5 +1,5 @@
 def mulmod(a: int, b: int, m: int) -> int:
-    """Returns the product of two numbers modulo m.
+    """Returns the product of two numbers modulo m, i.e. (a * b) % m = a * b % m.
 
     Args:
         a (int): number.
@@ -10,11 +10,12 @@ def mulmod(a: int, b: int, m: int) -> int:
         int: product modulo m.
     """
 
+    # This is already highly optimized in Python under the hood.
     return a * b % m
 
 
 def powmod(a: int, b: int, m: int) -> int:
-    """Returns the power of a number modulo m.
+    """Returns the power of a number modulo m, i.e. a^b % m.
 
     Args:
         a (int): number.
@@ -25,6 +26,7 @@ def powmod(a: int, b: int, m: int) -> int:
         int: power modulo m.
     """
 
+    # This is already highly optimized in Python under the hood.
     return pow(a, b, m)
 
 
@@ -39,6 +41,7 @@ def modinverse(a: int, m: int) -> int:
         int: modular inverse.
     """
 
+    # This is already highly optimized in Python under the hood.
     return pow(a, -1, m)
 
 
