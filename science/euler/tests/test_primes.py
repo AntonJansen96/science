@@ -2,16 +2,17 @@
 
 from science.euler.primes import Primes
 
+primes = Primes()
+
 
 def test_init():
-    primes = Primes()
+
     assert primes._nPrimes == 11
     assert primes._max == 1000
     assert primes._sieveArray == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
 
 
 def test_expand():
-    primes = Primes()
     primes._expand()
     assert primes._max == 4000
     assert len(primes._sieveArray) == 19
@@ -19,5 +20,9 @@ def test_expand():
 
 
 def test_sieve():
-    primes = Primes()
-    assert primes.sieve(40) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+    assert Primes.sieve(40) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37]
+
+
+def test_iscircularprime():
+    assert Primes.iscircularprime(197) == True
+    assert Primes.iscircularprime(227) == False

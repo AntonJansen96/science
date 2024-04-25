@@ -1,6 +1,7 @@
 from typing import List, Set, Union
 from math import isqrt as _isqrt
 from .fastmath import powmod as _powmod, mulmod as _mulmod
+from .euler import numDigits as _numDigits, lastNdigits as _lastNdigits
 
 
 class Primes:
@@ -127,6 +128,44 @@ class Primes:
                 self._expand()
 
         return num > 1  # No number smaller than 2 is prime.
+
+    @staticmethod
+    def iscircularprime(num: int) -> bool:
+        """Check if a number is a circular prime. A circular prime is a prime
+        number that remains prime under cyclic shifts of its digits.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            bool: True if circular prime, False otherwise.
+        """
+
+        if not Primes.isprime(num):
+            return False
+
+        def firstdigit(num: int) -> int:
+            while num >= 10:
+                num //= 10
+            return num
+
+        digits = _numDigits(num)
+        orig = num
+        result = 0
+
+        while True:
+            first = firstdigit(num)
+            remainder = _lastNdigits(num, digits - 1)
+            result = remainder * 10 + first
+
+            # If result is equal to the original num, we're done.
+            if result == orig:
+                return True
+
+            if not Primes.isprime(result):
+                return False
+
+            num = result
 
     @staticmethod
     def primepi(num: int) -> int:
