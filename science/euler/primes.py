@@ -1,4 +1,4 @@
-from typing import List, Set, Union, Generator
+from typing import List, Set, Union, Generator, Tuple
 from math import isqrt as _isqrt
 from .fastmath import powmod as _powmod, mulmod as _mulmod
 from .euler import (
@@ -67,20 +67,48 @@ class Primes:
         self._nPrimes = len(self._sieveArray)
 
     @staticmethod
-    def nextprime() -> Generator[int, None, None]:
+    def nextprime(lowerlim: int = 0) -> Generator[int, None, None]:
         """Infinite generator for prime numbers using the Miller Rabin test.
         This is faster than using the Sieve of Eratosthenes (in Python on M1).
+
+        Arguments:
+            lowerlim (int): lower limit for prime numbers generated.
 
         Yields:
             int: prime number.
         """
 
-        yield 2
-        num = 3
+        if lowerlim < 3:
+            yield 2
+            lowerlim = 3
+
+        if lowerlim % 2 == 0:
+            lowerlim += 1
+
+        num = lowerlim
         while True:
             if Primes.isprime(num):
                 yield num
             num += 2
+
+    @staticmethod
+    def prevprime(num: int) -> Generator[int, None, None]:
+        """Generates all prime numbers smaller than num using the Miller Rabin test.
+
+        Yields:
+            int: prime number.
+        """
+
+        if num % 2 == 0 and num != 2:
+            num += 1
+
+        while num > 2:
+            num -= 2
+            if Primes.isprime(num):
+                yield num
+
+            elif num == 1:
+                yield 2
 
     @staticmethod
     def sieve(limit: int) -> List[int]:
@@ -474,6 +502,48 @@ class Primes:
             totient -= totient // num
 
         return totient
+
+    @staticmethod
+    def gentwinprimes() -> Generator[Tuple[int, int], None, None]:
+        """Infinite generator for twin prime pairs.
+
+        Returns:
+            (int, int): twin prime pair.
+        """
+
+        prime = Primes.nextprime()
+        p1 = next(prime)
+        p2 = next(prime)
+
+        while True:
+            if p2 - p1 == 2:
+                yield p1, p2
+            p1 = p2
+            p2 = next(prime)
+
+    @staticmethod
+    def istwinprime(num: int, checknum: bool = True, lesser: bool = False) -> bool:
+        """Check if a number is (part of a) twin prime. A001359.
+
+        Args:
+            num (int): number.
+            checknum (bool): also check if num is prime.
+            lesser (bool): check if num is the lesser of the twin primes. Defaults to False.
+
+        Returns:
+            bool: True if twin prime, False otherwise.
+        """
+
+        if num <= 2 or checknum and not Primes.isprime(num):
+            return False
+
+        forward = Primes.nextprime(num + 1)
+        backward = Primes.prevprime(num)
+
+        if lesser:
+            return next(forward) - num == 2
+        else:
+            return next(forward) - num == 2 or num - next(backward) == 2
 
     def isamicable(self, num: int) -> bool:
         """Check if a number is amicable.
