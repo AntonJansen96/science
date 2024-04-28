@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 
 class Residue:
@@ -6,13 +7,13 @@ class Residue:
 
     def __init__(
         self,
-        atoms: list,
+        atoms: List[str],
         resname: str,
         chain: str,
         resid: int,
-        x: list,
-        y: list,
-        z: list,
+        x: List[float],
+        y: List[float],
+        z: List[float],
     ):
         """Initialize Residue object.
 
@@ -82,9 +83,9 @@ class Structure:
         Args:
             fname (string): file name (.pdb or .gro).
         """
-        self.__read(fname)
+        self._read(fname)
 
-    def __read(self, fname):
+    def _read(self, fname):
         """Handles reading of structure (pdb, gro) files into a Structure object.
 
         Args:
@@ -93,10 +94,10 @@ class Structure:
         extension = os.path.splitext(fname)[1]
 
         if extension == ".pdb":
-            self.__read_pdb(fname)
+            self._read_pdb(fname)
 
         elif extension == ".gro":
-            self.__read_gro(fname)
+            self._read_gro(fname)
 
         else:
             raise Exception("Target file should be a .pdb or .gro file!")
@@ -110,15 +111,15 @@ class Structure:
         extension = os.path.splitext(fname)[1]
 
         if extension == ".pdb":
-            self.__write_pdb(fname)
+            self._write_pdb(fname)
 
         elif extension == ".gro":
-            self.__write_gro(fname)
+            self._write_gro(fname)
 
         else:
             raise Exception("Target file should be a .pdb or .gro file!")
 
-    def __read_pdb(self, fname):
+    def _read_pdb(self, fname):
         with open(fname) as file:
 
             atomLines = []
@@ -191,7 +192,7 @@ class Structure:
         # Add the list of Residues to universe.
         self.d_residues = residues
 
-    def __read_gro(self, fname):
+    def _read_gro(self, fname):
 
         atomLines = open(fname).read().splitlines()
 
@@ -254,7 +255,7 @@ class Structure:
         # Add the list of Residues to universe.
         self.d_residues = residues
 
-    def __write_pdb(self, fname):
+    def _write_pdb(self, fname):
 
         with open(fname, "w") as file:
 
@@ -305,7 +306,7 @@ class Structure:
 
             file.write("TER\nENDMDL\n")
 
-    def __write_gro(self, fname):
+    def _write_gro(self, fname):
 
         with open(fname, "w") as file:
             # Title.

@@ -1,9 +1,12 @@
+from typing import List
+
+
 def genMissingAtomRep(
     fname: str,
     resRemark=465,
     atomRemark=470,
-    chains=["A", "B", "C", "D", "E"],
-    residues=["all"],
+    chains: List[str] = ["A", "B", "C", "D", "E"],
+    residues: List[str] = ["all"],
 ) -> None:
     """Generates .vmd representation file for visualzing the missing atoms in a .pdb file."""
 

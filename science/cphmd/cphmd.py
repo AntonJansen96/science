@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List
 from scipy.special import erf, erfinv
 
 
@@ -32,17 +33,17 @@ class GenPotentials:
         self.a = 0.0435  # Final value for dwpE = 7.5 kJ/mol.
         self.b = 0.0027  # Final value for dwpE = 7.5 kJ/mol.
 
-    def __Uwall(self, lamda: float) -> float:
+    def _Uwall(self, lamda: float) -> float:
         A = 1 - erf(self.r * (lamda + self.m))
         B = 1 + erf(self.r * (lamda - 1 - self.m))
         return 0.5 * self.w * (A + B)
 
-    def __Umin(self, lamda: float) -> float:
+    def _Umin(self, lamda: float) -> float:
         A = -((lamda - 1 - self.b) ** 2) / (2 * self.a**2)
         B = -((lamda + self.b) ** 2) / (2 * self.a**2)
         return -self.k * (np.exp(A) + np.exp(B))
 
-    def __Ubarrier(self, lamda: float) -> float:
+    def _Ubarrier(self, lamda: float) -> float:
         d = 0.5 * self.h
         return d * np.exp(-((lamda - 0.5) ** 2) / (2 * self.s**2))
 
@@ -55,7 +56,7 @@ class GenPotentials:
         Returns:
             float: potential (kJ/mol).
         """
-        return self.__Uwall(lamda) + self.__Umin(lamda) + self.__Ubarrier(lamda)
+        return self._Uwall(lamda) + self._Umin(lamda) + self._Ubarrier(lamda)
 
     def U_pH(self, lamda: float) -> float:
         """Henderson-Hasselbalch based pH potential.
@@ -225,7 +226,7 @@ class InverseBoltzmann:
         plt.savefig(f"{self.baseName}_added.png")
 
 
-def protonation(xList: list, cutoff: float = 0.8) -> float:
+def protonation(xList: List[float], cutoff: float = 0.8) -> float:
     """Returns the average protonation, i.e. the fraction of frames in which
     the lambda-coordinate is < 1 - cutoff.
 
@@ -256,7 +257,7 @@ def protonation(xList: list, cutoff: float = 0.8) -> float:
     return fraction
 
 
-def deprotonation(xList: list, cutoff: float = 0.8) -> float:
+def deprotonation(xList: List[float], cutoff: float = 0.8) -> float:
     """Returns the average deprotonation, i.e. the fraction of frames in which
     the lambda-coordinate is > cutoff.
 
@@ -287,7 +288,7 @@ def deprotonation(xList: list, cutoff: float = 0.8) -> float:
     return fraction
 
 
-def movingDeprotonation(xList: list, cutoff: float = 0.8):
+def movingDeprotonation(xList: List[float], cutoff: float = 0.8):
     """Returns a list containing the moving average deprotonation.
 
     Args:
@@ -432,7 +433,9 @@ def extractCharges(proto: str, depro: str) -> None:
     print("qqB_1", B, sum(B))
 
 
-def plotdVdl(dvdl: list, name: list = ["curve"], Nrange: tuple = (-0.1, 1.1)) -> None:
+def plotdVdl(
+    dvdl: List[float], name: List[str] = ["curve"], Nrange: tuple = (-0.1, 1.1)
+) -> None:
     """Makes a (combined) plot of the specified dV/dl coefficients.
 
     Args:
