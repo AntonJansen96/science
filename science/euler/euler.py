@@ -278,6 +278,30 @@ def isAutomorphic(num: int) -> bool:
     return num == _mulmod(num, num, m)
 
 
+def genLucky(lim: int) -> List[int]:
+    """Returns a list of the lucky numbers up to and including lim. 
+    Note: because of the nature of lucky numbers, a separate isLucky function
+    does not make sense. See also https://en.wikipedia.org/wiki/Lucky_number.
+
+    Args:
+        lim (int): upper limit.
+
+    Returns:
+        List[int]: The lucky numbers up to lim.
+    """
+
+    # This could probably be optimized but good for now.
+
+    lucky = list(range(lim + 1))
+    for v in lucky:
+        # Get a sice of the lucky list starting from the index v & ~1
+        # (which is always even) up to the end of the list,
+        # stepping by v if v is not zero, otherwise by 2.
+        del lucky[v & ~1 :: v or 2]
+
+    return lucky
+
+
 # PARTITIONING #################################################################
 
 
