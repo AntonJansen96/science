@@ -171,6 +171,10 @@ class Primes:
 
         # Optimization: miller Rabin is faster than implementation below (on M1).
         # If we want to use the code below, isprime can no-longer be a @staticmethod.
+
+        # Miller Rabin correctness is only guaranteed for num < 2^64.
+        assert num < 18446744073709551616, "num > 2^64"
+
         return Primes._millerrabin(num)
 
         if (num & 1) == 0:  # if num is even.
@@ -417,41 +421,6 @@ class Primes:
         # the number itself is not always at the end.
         return sorted(factors)[:-1] if proper else factors
 
-    # def factors(self, num: int, proper: bool = False) -> List[int]:
-    #     """Find all factors of a number. Note: list is not sorted.
-
-    #     Args:
-    #         num (int): number.
-    #         proper (bool): exclude num itself.
-
-    #     Returns:
-    #         list: factors.
-    #     """
-
-    #     assert num > 0, "num <= 0"
-
-    #     factors = []
-
-    #     # This is depth-first search is slow, maybe want to find a faster method.
-    #     def findfactors(num, primefactors, idx, factor):
-
-    #         if idx == len(primefactors):
-
-    #             factors.append(factor)
-    #             return
-
-    #         while True:
-
-    #             findfactors(num, primefactors, idx + 1, factor)
-    #             factor *= primefactors[idx]
-
-    #             if num % factor != 0:
-    #                 break
-
-    #     findfactors(num, self.primefactors(num, multiplicity=False), 0, 1)
-
-    #     return factors[:-1] if proper else factors
-
     def largestfactor(self, num: int) -> int:
         """Find the largest nontrivial factor of a number.
         Returns 1 if a number is prime.
@@ -596,6 +565,7 @@ class Primes:
     def _millerrabin(num: int) -> bool:
         """Check if a number is prime using the Miller-Rabin primality test.
         Guaranteed to be correct for numbers less than 2^64.
+        For larger numbers, the test becomes probabilistic.
 
         Args:
             num (int): number.
@@ -603,9 +573,6 @@ class Primes:
         Returns:
             bool: True if prime, False otherwise.
         """
-
-        # Only guaranteed to work for num < 2^64.
-        assert num < 18446744073709551616, "num > 2^64"
 
         bitmask_primes_2_to_31 = (  # Trivial cases.
             (1 << 2)
