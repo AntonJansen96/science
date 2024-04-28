@@ -1,10 +1,10 @@
-import time
-
+from time import time as _time
+from typing import List, Any
 
 class Stopwatch:
     """Stopwatch class. Helpful for profiling."""
 
-    def __init__(self, description=""):
+    def __init__(self, description: str = ""):
         """Initialize Stopwatch object. Count starts upon object initialization.
 
         Args:
@@ -12,11 +12,11 @@ class Stopwatch:
         """
 
         self.description = description
-        self.starttime = time.time()
+        self.starttime = _time()
 
     def time(self):
         """Print elapsed time (in seconds)."""
-        stoptime = time.time() - self.starttime
+        stoptime = _time() - self.starttime
         if self.description == "":
             print("{:.3f}".format(stoptime))
         else:
@@ -24,7 +24,7 @@ class Stopwatch:
 
 
 def gromacs(
-    command: str, stdin: list = [], terminal: bool = True, logFile: str = "gromacs.log"
+    command: str, stdin: List[str] = [], terminal: bool = True, logFile: str = "gromacs.log"
 ):
     """Python function for handeling calls to GROMACS.
 
@@ -69,7 +69,7 @@ def gromacs(
     return process.returncode
 
 
-def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
+def createIndexFile(inputFile: str, outputFile: str, groups: List[str]) -> str:
     """Creates an index (.ndx) file for GROMACS for a list of specified groups.
     These groups are strings that use the MDAnalysis selection syntax.
 
@@ -127,7 +127,7 @@ def createIndexFile(inputFile: str, outputFile: str, groups: list) -> str:
     return outputFile
 
 
-def inputOptionHandler(message: str, options: list):
+def inputOptionHandler(message: str, options: List[str]):
     """Handles input options when prompting a user.
 
     Args:
@@ -199,7 +199,7 @@ def triplet2letter(triplet: str):
     return dict[triplet]
 
 
-def ttestPass(sample1: list, sample2: list, alpha: float = 0.05):
+def ttestPass(sample1: List[float], sample2: List[float], alpha: float = 0.05):
     """Returns True if the means of sample1 and sample2 differ SIGNIFICANTLY.
     That is, with a confidence interval of 1 - alpha %. Uses Welch's t-test.
 
@@ -219,7 +219,7 @@ def ttestPass(sample1: list, sample2: list, alpha: float = 0.05):
     return bool(pvalue < alpha)
 
 
-def makeSuperDict(keyLists: list):
+def makeSuperDict(keyLists: List[List[Any]]):
     """Initializes a (recursively) nested dictionary of dictionaries based on a list
     of lists of keys. Helpful for organizing large amounts of data.
 
@@ -344,7 +344,7 @@ def backup(name: str, verbose: bool = True):
         if os.path.isfile(f"#{name}.{count}#"):
             count += 1
         else:
-            os.system(f"mv {name} \#{name}.{count}\#")  # noqa
+            os.system(f"mv {name} \\#{name}.{count}\\#")  # noqa
             if verbose:
                 print(f"Backed up {name} to #{name}.{count}#")
             return

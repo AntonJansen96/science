@@ -1,6 +1,7 @@
 import os
 import sys
-from datetime import datetime
+from datetime import datetime as _datetime
+from typing import List, Union
 
 
 class Sanitize:
@@ -17,12 +18,12 @@ class Sanitize:
         """
 
         self.var = var
-        self.__name = name
-        self.__verbose = v
-        self.__exit = exit
-        self.__good = True
+        self._name = name
+        self._verbose = v
+        self._exit = exit
+        self._good = True
 
-    def __error(self, msg: str) -> None:
+    def _error(self, msg: str) -> None:
         """Handles the error message program logic. Sets exitcode to 1 when executed.
 
         Args:
@@ -31,13 +32,13 @@ class Sanitize:
 
         pre = "SanitizeError: "  # Pre-string for error messages.
 
-        if self.__verbose:
+        if self._verbose:
 
-            if self.__name:
+            if self._name:
                 if type(self.var) == str:
-                    print(f"{pre}['{self.var}'] specified for [{self.__name}] {msg}.")
+                    print(f"{pre}['{self.var}'] specified for [{self._name}] {msg}.")
                 else:
-                    print(f"{pre}[{self.var}] specified for [{self.__name}] {msg}.")
+                    print(f"{pre}[{self.var}] specified for [{self._name}] {msg}.")
 
             else:
                 if type(self.var) == str:
@@ -45,20 +46,20 @@ class Sanitize:
                 else:
                     print(f"{pre}[{self.var}] {msg}.")
 
-        self.__good = False
+        self._good = False
 
-    def __endbehavior(self):
+    def _endbehavior(self):
         # if exit=True and we've had an error, exit python.
-        if self.__exit and not self.__good:
+        if self._exit and not self._good:
             sys.exit(1)
         # if exit=False and we've had an error, return None.
-        elif not self.__good:
+        elif not self._good:
             return None
         # If exit=False and we haven't had an error we're good.
         else:
             return self.var
 
-    def num(self, Type=None, Range: list = [], signed: bool = False):
+    def num(self, Type=None, Range: List[Union[int, float]] = [], signed: bool = False):
         """Sanitize numerical types (int, float, bool).
 
         Args:
@@ -76,22 +77,22 @@ class Sanitize:
 
         # First of all, if you use this function var should be an int, float, bool.
         if type(self.var) not in [int, float, bool]:
-            self.__error(f"not a number (should be in {[int, float, bool]})")
+            self._error(f"not a number (should be in {[int, float, bool]})")
 
         else:
             # Second, if Type was user-specified in any way, check for match.
             if Type is not None and type(self.var) not in Type:
-                self.__error(f"should be of type {Type} (found {type(self.var)})")
+                self._error(f"should be of type {Type} (found {type(self.var)})")
 
             # Check range.
             if len(Range) and (self.var < Range[0] or self.var > Range[1]):
-                self.__error(f"outside of acceptable interval {Range}")
+                self._error(f"outside of acceptable interval {Range}")
 
             # Check signed versus unsigned.
             if signed and self.var < 0:
-                self.__error("cannot be negative")
+                self._error("cannot be negative")
 
-        return self.__endbehavior()
+        return self._endbehavior()
 
     def string(
         self,
@@ -113,22 +114,22 @@ class Sanitize:
         """
         # Confirm whether var is a string.
         if type(self.var) != str:
-            self.__error(f"should be of type {str}")
+            self._error(f"should be of type {str}")
 
         # Check range.
         if len(Range) and (len(self.var) < Range[0] or len(self.var) > Range[1]):
-            self.__error(f"outside of acceptable length {Range}")
+            self._error(f"outside of acceptable length {Range}")
 
         if upper and not self.var.isupper():
-            self.__error("should be all uppercase")
+            self._error("should be all uppercase")
 
         if lower and not self.var.islower():
-            self.__error("should be all lowercase")
+            self._error("should be all lowercase")
 
         if (not ws) and (self.var.count(" ") > 0):
-            self.__error("cannot contain whitespace")
+            self._error("cannot contain whitespace")
 
-        return self.__endbehavior()
+        return self._endbehavior()
 
     def path(self, ext: str = "", out: bool = False, abs: bool = False):
         """Sanitize file paths (str).
@@ -143,24 +144,24 @@ class Sanitize:
         """
         # Only strings can represent file paths.
         if type(self.var) != str:
-            self.__error(f"should be of type {str}")
-            return int(not self.__good)
+            self._error(f"should be of type {str}")
+            return int(not self._good)
 
         # File paths cannot be empty strings.
         if self.var == "":
-            self.__error("cannot be empty")
+            self._error("cannot be empty")
 
         # File paths cannot be directories.
         elif os.path.isdir(self.var):
-            self.__error("is a directory")
+            self._error("is a directory")
 
         # (input) file path should correspond to an exisiting file.
         elif not os.path.exists(self.var) and not out:
-            self.__error("corresponding file does not exist")
+            self._error("corresponding file does not exist")
 
         # (output) file DIRECTORY should already exist:
         if out and not os.path.isdir(os.path.split(os.path.abspath(self.var))[0]):
-            self.__error("directory for output does not exist")
+            self._error("directory for output does not exist")
 
         # Check extension.
         if ext:
@@ -176,19 +177,19 @@ class Sanitize:
 
             # Comment this because file names can contain whitespace in linux.
             # if tail.count(" ") != 0:
-            #     self.__error("cannot contain whitespace")
+            #     self._error("cannot contain whitespace")
 
             if "." not in tail or (tail.index(".") == 0 and tail.count(".") == 1):
-                self.__error(f"does not have a file extension (should be {ext})")
+                self._error(f"does not have a file extension (should be {ext})")
 
             elif "." + tail.split(".")[-1] not in ext:
-                self.__error(f"should have extension {ext}")
+                self._error(f"should have extension {ext}")
 
         # Check absolute file path.
         if abs and not os.path.isabs(self.var):
-            self.__error("should be an absolute file path")
+            self._error("should be an absolute file path")
 
-        return self.__endbehavior()
+        return self._endbehavior()
 
 
 class User:
@@ -210,35 +211,35 @@ class User:
             maxLineLength (int): maximum length of sentence before a newline (does not consider length of preMessage etc). Defaults to 90.
         """
 
-        self.__baseName = baseName
-        self.__verbosity = verbosity
-        self.__logFileName = logFileName
-        self.__maxLineLength = maxLineLength
+        self._baseName = baseName
+        self._verbosity = verbosity
+        self._logFileName = logFileName
+        self._maxLineLength = maxLineLength
 
-    def __log(self, message: str):
-        if self.__logFileName:
-            with open(self.__logFileName, "a+") as logfile:
-                time = datetime.now().strftime("%Y/%m/%d|%H:%M:%S")
+    def _log(self, message: str):
+        if self._logFileName:
+            with open(self._logFileName, "a+") as logfile:
+                time = _datetime.now().strftime("%Y/%m/%d|%H:%M:%S")
                 print(time + " " + message, file=logfile)
 
-    def __output(self, message: str):
+    def _output(self, message: str):
         """Handles output to terminal and (optionally) logging.
 
         Args:
             message (str): message to be printed/logged.
         """
 
-        self.__log(message)
+        self._log(message)
         print(message)
 
     def doInput(self) -> str:
         """Handles input from terminal and (optionally) logging."""
 
-        string = input(self.__baseName)
-        self.__log(string)
+        string = input(self._baseName)
+        self._log(string)
         return string
 
-    def __base(self, message: str, preMessage: str = ""):
+    def _base(self, message: str, preMessage: str = ""):
         """Base method for handeling user messages.
 
         Args:
@@ -248,7 +249,7 @@ class User:
 
         # If we input a dictionary of list as a message, print and return.
         if isinstance(message, list) or isinstance(message, dict):
-            self.__output(message)
+            self._output(message)
             return
 
         firstLineWritten = False
@@ -259,10 +260,10 @@ class User:
 
             charCount += len(word) + 1
 
-            if charCount < self.__maxLineLength:
+            if charCount < self._maxLineLength:
                 currentLine += word + " "
             else:
-                self.__output(f"{self.__baseName}{preMessage}{currentLine}")
+                self._output(f"{self._baseName}{preMessage}{currentLine}")
                 firstLineWritten = True
                 charCount = len(word) + 1
                 currentLine = word + " "
@@ -272,7 +273,7 @@ class User:
             if firstLineWritten and preMessage != "":
                 preMessage = " ".ljust(len(preMessage))
 
-        self.__output(f"{self.__baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
+        self._output(f"{self._baseName}{preMessage}{currentLine.lstrip()}")  # Flush.
 
     def verbose(self, message: str):
         """Print message when verbosity is high.
@@ -281,8 +282,8 @@ class User:
             message (str): message.
         """
 
-        if self.__verbosity > 2:
-            self.__base(message)
+        if self._verbosity > 2:
+            self._base(message)
 
     def update(self, message: str):
         """Print default message.
@@ -291,8 +292,8 @@ class User:
             message (str): message.
         """
 
-        if self.__verbosity > 1:
-            self.__base(message)
+        if self._verbosity > 1:
+            self._base(message)
 
     def warning(self, message: str):
         """Print warning message.
@@ -301,10 +302,10 @@ class User:
             message (str): message.
         """
 
-        if self.__verbosity > 0:
-            self.__output(self.__baseName)
-            self.__base(message, preMessage="WARNING - ")
-            self.__output(self.__baseName)
+        if self._verbosity > 0:
+            self._output(self._baseName)
+            self._base(message, preMessage="WARNING - ")
+            self._output(self._baseName)
 
     def error(self, message: str):
         """Print error message and sys.exit() the program.
@@ -313,14 +314,14 @@ class User:
             message (str): message.
         """
 
-        if self.__verbosity > 0:
-            self.__output(self.__baseName)
-            self.__base(message, preMessage="ERROR - ")
-            self.__output(self.__baseName)
+        if self._verbosity > 0:
+            self._output(self._baseName)
+            self._base(message, preMessage="ERROR - ")
+            self._output(self._baseName)
 
         sys.exit(1)
 
-    def inputOptionHandler(self, message: str, options: list) -> int:
+    def inputOptionHandler(self, message: str, options: List[str]) -> int:
         """Handles user input when options are required.
 
         Args:
@@ -332,28 +333,28 @@ class User:
         """
 
         valids = []
-        msgstring = f"{self.__baseName}{message}"
+        msgstring = f"{self._baseName}{message}"
 
         # Loop through the options list and create string for display
         for idx in range(0, len(options)):
-            msgstring += f"\n{self.__baseName}{idx}. {options[idx]}"
+            msgstring += f"\n{self._baseName}{idx}. {options[idx]}"
             valids.append(str(idx))
 
         while True:
-            self.__output(msgstring)
-            val = input(f"{self.__baseName}Type a number: ")
+            self._output(msgstring)
+            val = input(f"{self._baseName}Type a number: ")
 
             if val in valids:
-                self.__output(f"{self.__baseName}selected {val}")
-                self.__output("")
+                self._output(f"{self._baseName}selected {val}")
+                self._output("")
                 return int(val)
 
-            self.__output(
-                f"{self.__baseName}{val} is not a valid option, please try again:\n"
+            self._output(
+                f"{self._baseName}{val} is not a valid option, please try again:\n"
             )
 
 
-def loadxvg(fname: str, col: list = [0, 1], dt: int = 1, b: int = 0):
+def loadxvg(fname: str, col: List[int] = [0, 1], dt: int = 1, b: int = 0):
     """Loads an .xvg file into a list of lists.
     May also be used to load float columns from files in general.
 
