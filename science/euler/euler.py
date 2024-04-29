@@ -233,6 +233,10 @@ def isPalindrome(num: int) -> bool:
         bool: True if number is a palindrome, False otherwise.
     """
 
+    # This (from LeetCode) is almost twice as fast as the code below.
+    stringnum = str(num)
+    return stringnum[::-1] == stringnum
+
     return num == reverseNumber(num)
 
 
@@ -279,7 +283,7 @@ def isAutomorphic(num: int) -> bool:
 
 
 def genLucky(lim: int) -> List[int]:
-    """Returns a list of the lucky numbers up to and including lim. 
+    """Returns a list of the lucky numbers up to and including lim.
     Note: because of the nature of lucky numbers, a separate isLucky function
     does not make sense. See also https://en.wikipedia.org/wiki/Lucky_number.
 
