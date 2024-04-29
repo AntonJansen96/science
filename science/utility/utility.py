@@ -1,6 +1,7 @@
 from time import time as _time
 from typing import List, Any
 
+
 class Stopwatch:
     """Stopwatch class. Helpful for profiling."""
 
@@ -24,7 +25,10 @@ class Stopwatch:
 
 
 def gromacs(
-    command: str, stdin: List[str] = [], terminal: bool = True, logFile: str = "gromacs.log"
+    command: str,
+    stdin: List[str] = [],
+    terminal: bool = True,
+    logFile: str = "gromacs.log",
 ):
     """Python function for handeling calls to GROMACS.
 
