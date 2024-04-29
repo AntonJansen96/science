@@ -1,6 +1,6 @@
 from math import factorial as _factorial, comb as _comb
 from itertools import permutations as _permutations, combinations as _combinations
-
+from sympy.utilities.iterables import multiset_permutations as _multiset_permutations
 from .utility import num2list as _num2list, list2num as _list2num
 
 
@@ -17,20 +17,25 @@ def numperms(array: list):
     return _factorial(len(array))
 
 
-def genperms(array: list, asint: bool = False):
+def genperms(array: list, unique: bool = False, asint: bool = False):
     """Generate all permutations of array.
     Note: to go in reverse, simply use array[::-1].
 
     Args:
         array (list): input.
+        unique (bool): only unique permutations.
         asint (bool): return the permutation as an integer.
 
     Yields:
         tuple or int: permutation.
     """
 
-    for permutation in _permutations(array):
-        yield _list2num(permutation) if asint else permutation
+    if unique:
+        for permutation in _multiset_permutations(array):
+            yield _list2num(permutation) if asint else tuple(permutation)
+    else:
+        for permutation in _permutations(array):
+            yield _list2num(permutation) if asint else permutation
 
 
 def numcombs(array: list, r: int) -> int:
@@ -88,7 +93,7 @@ def numbersplit(number: int):
         number (int): number.
 
     Yields:
-        list: split.
+        tuple: split.
     """
 
     n = _num2list(number)
@@ -108,4 +113,4 @@ def numbersplit(number: int):
 
         result.append(_list2num(temp))
 
-        yield result
+        yield tuple(result)
