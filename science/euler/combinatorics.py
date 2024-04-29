@@ -1,10 +1,11 @@
+from typing import Generator
 from math import factorial as _factorial, comb as _comb
 from itertools import permutations as _permutations, combinations as _combinations
 from sympy.utilities.iterables import multiset_permutations as _multiset_permutations
 from .utility import num2list as _num2list, list2num as _list2num
 
 
-def numperms(array: list):
+def numperms(array: list) -> int:
     """Number of permutations for array. This is len(array)!.
 
     Args:
@@ -17,7 +18,9 @@ def numperms(array: list):
     return _factorial(len(array))
 
 
-def genperms(array: list, unique: bool = False, asint: bool = False):
+def genperms(
+    array: list, unique: bool = False, asint: bool = False
+) -> Generator[tuple[int] | int, None, None]:
     """Generate all permutations of array.
     Note: to go in reverse, simply use array[::-1].
 
@@ -52,7 +55,9 @@ def numcombs(array: list, r: int) -> int:
     return _comb(len(array), r)
 
 
-def gencombs(array: list, r: int, asint: bool = False):
+def gencombs(
+    array: list, r: int, asint: bool = False
+) -> Generator[tuple | int, None, None]:
     """Generate combinations of array.
 
     Args:
@@ -68,7 +73,9 @@ def gencombs(array: list, r: int, asint: bool = False):
         yield _list2num(combination) if asint else combination
 
 
-def genallcombs(array: list, asint: bool = False):
+def genallcombs(
+    array: list, asint: bool = False
+) -> Generator[tuple[int] | int, None, None]:
     """Generate all combinations of array.
     Note: also generates the identity combination () (0 if asint=True).
 
@@ -85,7 +92,7 @@ def genallcombs(array: list, asint: bool = False):
             yield _list2num(combination) if asint else combination
 
 
-def numbersplit(number: int):
+def numbersplit(number: int) -> Generator[tuple[int], None, None]:
     """Split a number into all possible combinations of numbers.
     E.g. 1234 --> 1234, 12 34, 1 234, 123 4, 1 23 4, 1 2 3 4.
 
@@ -114,3 +121,41 @@ def numbersplit(number: int):
         result.append(_list2num(temp))
 
         yield tuple(result)
+
+
+def countPartitions(money: int, coins: list[int] = []) -> int:
+    """Returns the number of ways money can be divided (optionally: by coins provided in the coins array).
+
+    Args:
+        money (int): starting number.
+        coins (list, optional): coins provided in a coin vector. Defaults to [1, 2, ..., money + 1].
+
+    Returns:
+        int: number of ways.
+    """
+
+    if not coins:
+        coins = range(1, money + 1)
+
+    ways = [0] * (money + 1)
+    ways[0] = 1
+
+    for ii in range(0, len(coins)):
+        for jj in range(coins[ii], money + 1):
+            ways[jj] += ways[jj - coins[ii]]
+
+    return ways[money]
+
+
+def genPartitions(money: int) -> Generator[list[int], None, None]:
+
+    # Base case of recursion: zero is the sum of the empty list.
+    if money == 0:
+        yield []
+        return
+
+    # Modify partitions of n-1 to form partitions of n.
+    for part in genPartitions(money - 1):
+        yield [1] + part
+        if part and (len(part) < 2 or part[1] > part[0]):
+            yield [part[0] + 1] + part[1:]

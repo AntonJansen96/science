@@ -306,33 +306,6 @@ def genLucky(lim: int) -> List[int]:
     return lucky
 
 
-# PARTITIONING #################################################################
-
-
-def partition(money: int, coins: List[int] = []) -> int:
-    """Returns the number of ways money can be divided (optionally: by coins provided in the coins array).
-
-    Args:
-        money (int): starting number.
-        coins (list, optional): coins provided in a coin vector. Defaults to [1, 2, ..., money + 1].
-
-    Returns:
-        int: number of ways.
-    """
-
-    if not coins:
-        coins = range(1, money + 1)
-
-    ways = [0] * (money + 1)
-    ways[0] = 1
-
-    for ii in range(0, len(coins)):
-        for jj in range(coins[ii], money + 1):
-            ways[jj] += ways[jj - coins[ii]]
-
-    return ways[money]
-
-
 # GENERATORS ###################################################################
 
 

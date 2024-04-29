@@ -38,3 +38,14 @@ def test_numbersplit():
     # fmt: off
     assert list(numbersplit(1234)) == [(1234,), (1, 234), (12, 34), (1, 2, 34), (123, 4), (1, 23, 4), (12, 3, 4), (1, 2, 3, 4)]
     # fmt: on
+
+
+def test_countPartitions():
+    assert countPartitions(5) == 7
+    assert countPartitions(6) == 11
+
+
+def test_genPartitions():
+    # fmt: off
+    assert list(genPartitions(5)) == [[1, 1, 1, 1, 1], [1, 1, 1, 2], [1, 2, 2], [1, 1, 3], [2, 3], [1, 4], [5]]
+    # fmt: on

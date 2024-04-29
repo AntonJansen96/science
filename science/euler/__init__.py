@@ -16,7 +16,6 @@ __all__ = [
     "isPermutation",
     "isAutomorphic",
     "genLucky",
-    "partition",
     "fibonacci",
     "genPanDigital",
     "genPrimTriples",
