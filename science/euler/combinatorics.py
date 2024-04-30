@@ -5,17 +5,25 @@ from sympy.utilities.iterables import multiset_permutations as _multiset_permuta
 from .utility import num2list as _num2list, list2num as _list2num
 
 
-def numperms(array: list) -> int:
-    """Number of permutations for array. This is len(array)!.
+def numperms(array: list, unique: bool = False) -> int:
+    """Number of permutations for array. This is n! for non-unique permutations
+    and n! / (n1! * n2! * ... * nk!) for unique permutations.
 
     Args:
         array (list): input.
+        unique (bool): unique permutations? Defaults to False.
 
     Returns:
         int: number of permutations.
     """
 
-    return _factorial(len(array))
+    n = _factorial(len(array))
+
+    if unique:
+        for count in [array.count(element) for element in set(array)]:
+            n //= _factorial(count)
+
+    return n
 
 
 def genperms(
