@@ -247,6 +247,21 @@ class Primes:
 
         return Primes.isprime(num) and Primes.isprime(2 * num + 1)
 
+    def issquarefree(self, num: int) -> bool:
+        """Checks if a number is square-free. A positive integer n is called
+        square-free if no square of a prime divides n. This is the case when
+        it's prime decomposition holds no repeated factors. See also https://oeis.org/A005117.
+
+        Args:
+            num (int): number.
+
+        Returns:
+            bool: True if the number is squarefree, False otherwise.
+        """
+
+        pfactors = self.primefactors(num)
+        return len(pfactors) == len(set(pfactors))
+
     @staticmethod
     def primerange(start: int, stop: int) -> List[int]:
         """Returns a list all prime numbers between start and stop.
