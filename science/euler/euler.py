@@ -3,6 +3,129 @@ from math import isqrt as _isqrt
 from .fastmath import intlog10 as _intlog10, mulmod as _mulmod
 from .combinatorics import genperms as _genperms
 
+# CONTINUED FRACTIONS ##########################################################
+
+
+class ContinuedFraction:
+    """Class to convert between continued fractions and fractions/square roots."""
+
+    def __init__(self) -> None:
+        """Initializes ContinuedFraction object."""
+
+    @staticmethod
+    def fromfrac(p: int, q: int) -> list:
+        """Converts a fraction p/q to a continued fraction representation.
+
+        Args:
+            p (int): numerator.
+            q (int): denominator.
+
+        Returns:
+            list: continued fraction representation.
+        """
+
+        cf = []
+        while q != 0:
+            cf.append(p // q)
+            p, q = q, p % q
+        return cf
+
+    @staticmethod
+    def tofrac(cf: list, dec: bool = True) -> float | tuple:
+        """Converts a continued fraction back to a fraction p/q.
+
+        Args:
+            cf (list): continued fraction representation.
+
+        Returns:
+            float | tuple: (p, q) or p/q.
+        """
+
+        p, q = 1, 0
+        for coeff in reversed(cf):
+            p, q = q, p
+            p += coeff * q
+        return p / q if dec else (p, q)
+
+    @staticmethod
+    def fromsqrt(N: int, lim: int = 0) -> list:
+        """Converts a square root N to a continued fraction representation.
+
+        Args:
+            N (int): sqrt(N).
+            lim (int, optional): Limit for the number of coefficients in the
+            continued fraction. If set to zero, will compute until full period
+            is found. Defaults to 0.
+
+        Returns:
+            list: continued fraction representation.
+        """
+
+        from math import isqrt
+
+        if isqrt(N) ** 2 == N:
+            return [isqrt(N)]
+
+        cf = []
+        m, d, a = 0, 1, isqrt(N)
+        cf.append(a)
+
+        if lim:
+            for _ in range(1, lim):
+
+                m = d * a - m
+                d = (N - m * m) // d
+                a = (isqrt(N) + m) // d
+                cf.append(a)
+
+            return cf
+
+        else:
+            states = set()
+            while (m, d, a) not in states:
+                states.add((m, d, a))
+
+                m = d * a - m
+                d = (N - m * m) // d
+                a = (isqrt(N) + m) // d
+                cf.append(a)
+
+            return cf[:-1]
+
+    @staticmethod
+    def tosqrt(cf: list, iter: int = 2, dec: bool = True) -> float | tuple:
+        """Converts a continued fraction back to a square root sqrt(N).
+        Note that unlike the fraction case, the continued fraction representation
+        of a square root is periodic. Therefore, the number N resulting from this
+        function will be an approximation.
+
+        Args:
+            cf (list): continued fraction representation of the root.
+            iter (int, optional): Number of times to cycle through the periodic
+            part of the continued fraction of a square root when computing back
+            the decimal. Defaults to 2.
+
+        Returns:
+            float | tuple: decimal or fractional approximation.
+        """
+
+        assert iter >= 0
+
+        # We don't make cf #iter times as large but rather reloop the current cf.
+        def helper(cf: list, iter: int):
+            for _ in range(iter):
+                for idx in range(len(cf) - 1, 0, -1):
+                    yield cf[idx]
+            yield cf[0]
+
+        p, q = 1, 0
+        for coeff in helper(cf, iter=iter):
+            p, q = q, p
+            p += coeff * q
+
+        return (p * p) / (q * q) if dec else (p, q)
+
+
 # NUMBERS AND DIGITS ###########################################################
 
 
