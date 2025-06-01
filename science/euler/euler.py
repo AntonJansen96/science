@@ -118,8 +118,11 @@ class ContinuedFraction:
                     yield cf[idx]
             yield cf[0]
 
+        array = []
+
         p, q = 1, 0
         for coeff in helper(cf, iter=iter):
+            array.append(coeff)
             p, q = q, p
             p += coeff * q
 
@@ -515,7 +518,6 @@ def genAllTriples(perimLim: int) -> Tuple[List[int], List[int], List[int]]:
 
                 k = 1
                 while k * (a + b + c) <= perimLim:
-                    print("hello")
                     A.append(k * a)
                     B.append(k * b)
                     C.append(k * c)
