@@ -1,6 +1,7 @@
 from typing import Generator
 from math import factorial as _factorial, comb as _comb
 from itertools import permutations as _permutations, combinations as _combinations
+from more_itertools import distinct_combinations as _distinct_combinations
 from sympy.utilities.iterables import multiset_permutations as _multiset_permutations
 from .utility import num2list as _num2list, list2num as _list2num
 
@@ -64,31 +65,38 @@ def numcombs(array: list, r: int) -> int:
 
 
 def gencombs(
-    array: list, r: int, asint: bool = False
+    array: list, r: int, unique: bool = False, asint: bool = False
 ) -> Generator[tuple | int, None, None]:
     """Generate combinations of array.
 
     Args:
         array (list): input.
         r (int): number of elements to choose.
+        unique (bool): return only unique (distinct) combinations.
         asint (bool): return the combination as an integer.
 
     Yields:
         tuple or int: combination.
     """
 
-    for combination in _combinations(array, r):
+    if unique:
+        generator = _distinct_combinations(array, r)
+    else:
+        generator = _combinations(array, r)
+
+    for combination in generator:
         yield _list2num(combination) if asint else combination
 
 
 def genallcombs(
-    array: list, asint: bool = False
+    array: list, unique: bool = False, asint: bool = False
 ) -> Generator[tuple[int] | int, None, None]:
     """Generate all combinations of array.
     Note: also generates the identity combination () (0 if asint=True).
 
     Args:
         array (list): input.
+        unique (bool): return only unique (distinct) combinations.
         asint (bool): return the combination as an integer.
 
     Yields:
@@ -96,7 +104,13 @@ def genallcombs(
     """
 
     for r in range(len(array) + 1):
-        for combination in _combinations(array, r):
+
+        if unique:
+            generator = _distinct_combinations(array, r)
+        else:
+            generator = _combinations(array, r)
+
+        for combination in generator:
             yield _list2num(combination) if asint else combination
 
 
